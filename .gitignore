@@ -21,6 +21,9 @@ node_modules/
 *.sln
 *.sw?
 
+# Cursor
+.cursor/
+
 # OS specific
 .DS_Store
 
@@ -53,4 +56,4 @@ venv-py313/
 *.exp
 *.dll
 *.zip
-*.exe 
+*.exe
