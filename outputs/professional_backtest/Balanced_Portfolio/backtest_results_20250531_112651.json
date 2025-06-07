@@ -1,0 +1,71 @@
+{
+  "config": {
+    "symbols": [
+      "EURUSD",
+      "GBPUSD",
+      "USDJPY",
+      "USDCHF"
+    ],
+    "timeframe": "5m",
+    "start_date": "2024-01-01T00:00:00",
+    "end_date": "2024-01-31T00:00:00",
+    "initial_capital": 500000.0,
+    "mode": "full_pipeline"
+  },
+  "performance": {
+    "total_return": 0.0,
+    "annualized_return": 0.0,
+    "volatility": 0.0,
+    "sharpe_ratio": 0.0,
+    "sortino_ratio": 0.0,
+    "calmar_ratio": 0.0,
+    "max_drawdown": 0.0,
+    "max_drawdown_duration": 0.0,
+    "win_rate": 0.0,
+    "profit_factor": 0.0,
+    "total_trades": 0,
+    "total_commission": 0.0,
+    "total_slippage": 0.0
+  },
+  "execution": {
+    "total_orders": 22740,
+    "filled_orders": 0,
+    "rejected_orders": 22740,
+    "partial_fills": 0,
+    "fill_rate": 0.0,
+    "total_fills": 0,
+    "total_commission": 0.0,
+    "total_slippage": 0.0,
+    "avg_commission_per_fill": 0,
+    "avg_slippage_per_fill": 0,
+    "pending_orders": 0
+  },
+  "regime_performance": {
+    "trending": {
+      "total_return": 0.0,
+      "volatility": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "win_rate": 0.0,
+      "num_periods": 0
+    },
+    "ranging": {
+      "total_return": 0.0,
+      "volatility": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "win_rate": 0.0,
+      "num_periods": 0
+    },
+    "volatile": {
+      "total_return": 0.0,
+      "volatility": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "win_rate": 0.0,
+      "num_periods": 0
+    }
+  },
+  "final_equity": 500000.0,
+  "final_positions": {}
+}

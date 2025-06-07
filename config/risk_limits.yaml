@@ -1,0 +1,47 @@
+drawdown_limits:
+  max_daily_drawdown: 0.05
+  max_total_drawdown: 0.15
+  warning_daily_drawdown: 0.03
+  warning_total_drawdown: 0.10
+  recovery_threshold: 0.01
+
+position_limits:
+  max_position_per_symbol: 0.05
+  max_total_exposure: 0.25
+  max_concurrent_positions: 10
+  max_strategy_exposure: 0.10
+  max_currency_exposure: 0.15
+  max_correlated_exposure: 0.20
+  correlation_threshold: 0.7
+  max_leverage: 10.0
+  warning_leverage: 7.0
+
+var_parameters:
+  confidence_level: 0.95
+  horizon_days: 1
+  lookback_period: 252
+  max_portfolio_var: 0.02
+  warning_portfolio_var: 0.015
+  calculation_method: "historical"
+
+monitoring:
+  pnl_update_frequency: 1
+  risk_metrics_frequency: 5
+  var_calculation_frequency: 60
+  rapid_loss_threshold: 0.01
+  rapid_loss_timeframe: 60
+  volatility_spike_threshold: 3.0
+
+emergency_controls:
+  kill_switch_triggers: ["max_total_drawdown", "max_daily_drawdown"]
+  emergency_actions: ["liquidate_all", "cancel_orders", "halt_trading"]
+  manual_override: True
+  recovery_conditions: ["pnl_positive_3_days", "drawdown_below_warning"]
+
+alerts:
+  channels: ["logger", "email"]
+  levels: ["warning", "critical", "emergency"]
+  frequency_limits:
+    warning: 60
+    critical: 15
+    emergency: 1 

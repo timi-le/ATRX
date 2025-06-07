@@ -1,0 +1,271 @@
+# Execution Engine Configuration
+# FX AI-Quant Trading System - Order Management System (OMS)
+
+# Execution Algorithms Configuration
+execution_algorithms:
+  # Time Weighted Average Price (TWAP)
+  twap:
+    slice_interval_seconds: 60  # Default slice interval in seconds
+    max_slices: 100  # Maximum number of slices per order
+    min_slice_size_ratio: 0.005  # Minimum slice size as ratio of total order (0.5%)
+    max_slice_size_ratio: 0.1  # Maximum slice size as ratio of total order (10%)
+    adaptive_sizing: true  # Enable adaptive slice sizing based on market conditions
+    market_condition_adjustment:
+      volatile_multiplier: 0.7  # Reduce slice size in volatile markets
+      illiquid_multiplier: 0.5  # Reduce slice size in illiquid markets
+      normal_multiplier: 1.0  # Normal market conditions
+    completion_time_hours: 1  # Default completion time in hours
+    
+  # Percent of Volume (POV)
+  pov:
+    target_participation_rate: 0.15  # Target 15% of market volume
+    max_participation_rate: 0.25  # Maximum 25% of market volume
+    min_participation_rate: 0.05  # Minimum 5% of market volume
+    volume_estimation_window: 300  # Volume estimation window in seconds
+    participation_adjustment:
+      high_impact_threshold_bps: 5  # Reduce participation if impact > 5 bps
+      low_impact_threshold_bps: 2  # Increase participation if impact < 2 bps
+      adjustment_factor: 0.1  # 10% adjustment per iteration
+    market_impact_monitoring: true
+    
+  # Volume Weighted Average Price (VWAP)
+  vwap:
+    default_completion_hours: 4  # Default VWAP execution period
+    volume_profile_required: true  # Require historical volume profile
+    intraday_curve_following: true  # Follow intraday volume patterns
+    peak_hours: [8, 9, 10, 14, 15, 16]  # Peak trading hours (UTC)
+    quiet_hours: [0, 1, 2, 3, 4, 5, 22, 23]  # Quiet trading hours (UTC)
+    volume_ratios:
+      peak_hour_ratio: 0.15  # 15% of daily volume in peak hours
+      normal_hour_ratio: 0.04  # 4% of daily volume in normal hours
+      quiet_hour_ratio: 0.02  # 2% of daily volume in quiet hours
+    deficit_adjustment_factor: 0.5  # Adjustment for execution deficit
+    
+  # Direct Execution
+  direct:
+    size_threshold: 10000  # Orders below this value use direct execution
+    allow_market_orders: true  # Allow market orders for immediate execution
+    aggressive_limit_improvement_bps: 5  # Price improvement for aggressive limits
+    execution_timeout_seconds: 30  # Maximum time for direct execution
+    retry_attempts: 3  # Number of retry attempts for failed executions
+
+# Order Management Configuration
+order_management:
+  max_order_age_hours: 24  # Maximum age before order cancellation
+  retry_attempts: 3  # Number of retry attempts for failed orders
+  retry_delay_seconds: 5  # Delay between retry attempts
+  partial_fill_timeout_seconds: 300  # Timeout for partial fills
+  order_validation:
+    min_order_size: 1000  # Minimum order size
+    max_order_size: 10000000  # Maximum order size
+    supported_symbols: ["EURUSD", "GBPUSD", "USDJPY", "USDCHF", "AUDUSD", "USDCAD", "NZDUSD"]
+    supported_order_types: ["MARKET", "LIMIT", "STOP"]
+  
+# Slippage Control Configuration
+slippage_control:
+  max_slippage_bps: 10  # Maximum allowed slippage in basis points
+  warning_threshold_bps: 5  # Warning threshold for slippage
+  price_improvement_threshold_bps: -2  # Threshold for price improvement
+  slippage_monitoring:
+    track_by_algorithm: true  # Track slippage by execution algorithm
+    track_by_symbol: true  # Track slippage by symbol
+    track_by_time_of_day: true  # Track slippage by time of day
+    alert_on_excessive_slippage: true
+    
+# Quality Monitoring Configuration
+quality_monitoring:
+  track_execution_metrics: true  # Enable execution quality tracking
+  metrics_retention_days: 30  # Retain metrics for 30 days
+  benchmark_against_arrival_price: true  # Benchmark against arrival price
+  benchmark_against_vwap: true  # Benchmark against VWAP when available
+  performance_metrics:
+    - "slippage_bps"
+    - "execution_time_ms"
+    - "fill_rate"
+    - "market_impact_bps"
+    - "implementation_shortfall_bps"
+    - "participation_rate"
+  reporting:
+    daily_summary: true
+    weekly_analysis: true
+    algorithm_comparison: true
+    
+# Risk Controls Configuration
+risk_controls:
+  enable_pre_trade_checks: true  # Enable pre-trade risk validation
+  max_order_value: 1000000  # Maximum order value in base currency
+  position_limit_check: true  # Check position limits before execution
+  concentration_limits:
+    max_symbol_exposure_ratio: 0.1  # Max 10% exposure per symbol
+    max_strategy_exposure_ratio: 0.2  # Max 20% exposure per strategy
+  market_condition_checks:
+    halt_on_extreme_volatility: true
+    volatility_threshold: 0.05  # 5% volatility threshold
+    spread_threshold_bps: 20  # 20 bps spread threshold
+    
+# Broker Configuration
+brokers:
+  # MetaTrader 5 Configuration
+  mt5:
+    enabled: true
+    priority: 1  # Higher priority (lower number)
+    max_orders_per_second: 10
+    connection_timeout: 30
+    retry_attempts: 3
+    retry_delay: 2.0
+    health_check_interval: 60
+    order_timeout: 300
+    position_sync_interval: 30
+    credentials:
+      login: "${MT5_LOGIN}"  # Environment variable
+      password: "${MT5_PASSWORD}"  # Environment variable
+      server: "${MT5_SERVER}"  # Environment variable
+    settings:
+      magic_number: 12345
+      deviation: 3  # Price deviation in points
+      fill_policy: "FOK"  # Fill or Kill
+      type_time: "GTC"  # Good Till Cancelled
+      
+  # Interactive Brokers Configuration
+  ibkr:
+    enabled: false  # Disabled by default
+    priority: 2
+    max_orders_per_second: 5
+    connection_timeout: 30
+    retry_attempts: 3
+    retry_delay: 2.0
+    health_check_interval: 60
+    order_timeout: 300
+    position_sync_interval: 30
+    credentials:
+      host: "127.0.0.1"
+      port: 7497  # TWS paper trading port
+      client_id: 1
+    settings:
+      account: "${IBKR_ACCOUNT}"  # Environment variable
+      exchange: "IDEALPRO"
+      currency: "USD"
+      
+  # Mock Broker for Testing
+  mock:
+    enabled: true  # Enabled for testing
+    priority: 3
+    max_orders_per_second: 100
+    connection_timeout: 1
+    retry_attempts: 1
+    retry_delay: 0.1
+    health_check_interval: 30
+    order_timeout: 60
+    position_sync_interval: 10
+    credentials: {}
+    settings:
+      simulate_latency: true
+      latency_ms: 50
+      simulate_slippage: true
+      slippage_bps: 1
+      fill_probability: 0.95
+      
+# Performance Configuration
+performance:
+  # Execution Engine Performance
+  max_concurrent_orders: 1000  # Maximum concurrent orders
+  order_processing_threads: 4  # Number of order processing threads
+  market_data_update_frequency: 100  # Market data updates per second
+  execution_monitoring_frequency: 10  # Execution monitoring frequency (Hz)
+  
+  # Memory Management
+  max_order_history: 10000  # Maximum orders in history
+  max_execution_metrics: 50000  # Maximum execution metrics to retain
+  cleanup_interval_hours: 24  # Cleanup interval for old data
+  
+  # Latency Targets
+  order_submission_target_ms: 10  # Target order submission latency
+  order_cancellation_target_ms: 5  # Target order cancellation latency
+  status_update_target_ms: 1  # Target status update latency
+  
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  execution_events: true  # Log execution events
+  order_lifecycle: true  # Log complete order lifecycle
+  performance_metrics: true  # Log performance metrics
+  market_data_updates: false  # Log market data updates (verbose)
+  algorithm_decisions: true  # Log algorithm decision making
+  
+  # Log Rotation
+  max_file_size_mb: 100
+  backup_count: 10
+  
+  # Structured Logging
+  format: "json"  # json or text
+  include_timestamps: true
+  include_thread_info: true
+  include_process_info: true
+  
+# Market Data Configuration
+market_data:
+  # Data Sources
+  primary_source: "mock"  # mock, mt5, ibkr, external
+  backup_sources: ["mock"]
+  
+  # Update Frequencies
+  tick_data_frequency: 100  # Ticks per second
+  level2_data_frequency: 10  # Level 2 updates per second
+  volume_data_frequency: 1  # Volume updates per second
+  
+  # Data Quality
+  stale_data_threshold_ms: 1000  # Consider data stale after 1 second
+  data_validation: true  # Validate incoming market data
+  outlier_detection: true  # Detect and filter outliers
+  
+  # Historical Data
+  volume_profile_days: 30  # Days of historical data for volume profiles
+  volatility_calculation_periods: [60, 300, 900]  # Volatility periods in seconds
+  
+# Alerts and Notifications
+alerts:
+  # Execution Alerts
+  excessive_slippage: true
+  order_rejections: true
+  execution_delays: true
+  algorithm_failures: true
+  
+  # System Alerts
+  broker_disconnections: true
+  performance_degradation: true
+  risk_limit_breaches: true
+  
+  # Alert Channels
+  channels:
+    - "log"  # Always log alerts
+    - "console"  # Console output
+    # - "email"  # Email notifications (configure separately)
+    # - "slack"  # Slack notifications (configure separately)
+    
+  # Alert Thresholds
+  thresholds:
+    slippage_alert_bps: 8
+    execution_delay_alert_ms: 1000
+    fill_rate_alert_threshold: 0.9
+    
+# Testing Configuration
+testing:
+  # Unit Testing
+  mock_market_data: true
+  simulate_network_latency: true
+  simulate_broker_errors: true
+  
+  # Integration Testing
+  test_all_algorithms: true
+  test_broker_connections: true
+  test_error_scenarios: true
+  
+  # Performance Testing
+  load_test_orders_per_second: 50
+  stress_test_concurrent_orders: 500
+  latency_test_iterations: 1000
+  
+  # Test Data
+  test_symbols: ["EURUSD", "GBPUSD", "USDJPY"]
+  test_order_sizes: [1000, 10000, 100000]
+  test_market_conditions: ["normal", "volatile", "illiquid"] 

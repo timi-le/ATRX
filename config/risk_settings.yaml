@@ -1,0 +1,144 @@
+# Risk Management Settings for Kelly Criterion Position Sizer
+# FX AI-Quant Trading System
+
+# Kelly Criterion Parameters
+kelly_criterion:
+  # Maximum position size cap (percentage of capital)
+  max_position_cap: 0.05          # 5% maximum position size
+  
+  # Minimum position size (to avoid dust trades)
+  min_position_size: 0.001        # 0.1% minimum position size
+  
+  # Kelly fraction scaling factor (conservative approach)
+  kelly_scaling_factor: 0.25      # Use 25% of full Kelly (quarter Kelly)
+  
+  # Default parameters when signal data is incomplete
+  default_win_probability: 0.55   # Default win rate assumption
+  default_reward_risk_ratio: 1.5  # Default TP/SL ratio
+
+# Volatility Scaling
+volatility_scaling:
+  # Enable volatility-based position scaling
+  enabled: true
+  
+  # Volatility measurement period (bars)
+  lookback_period: 20
+  
+  # Volatility scaling parameters
+  base_volatility_threshold: 0.0002    # Base ATR threshold for FX
+  max_volatility_threshold: 0.0008     # Maximum ATR threshold
+  
+  # Scaling factors
+  low_volatility_multiplier: 1.2       # Increase size in low vol
+  high_volatility_multiplier: 0.6      # Reduce size in high vol
+  
+  # Volatility regime thresholds
+  low_vol_percentile: 25               # Below 25th percentile = low vol
+  high_vol_percentile: 75              # Above 75th percentile = high vol
+
+# Drawdown Protection
+drawdown_protection:
+  # Enable drawdown-based position scaling
+  enabled: true
+  
+  # Drawdown thresholds (percentage of capital)
+  mild_drawdown_threshold: 0.05        # 5% drawdown
+  moderate_drawdown_threshold: 0.10    # 10% drawdown
+  severe_drawdown_threshold: 0.15      # 15% drawdown
+  
+  # Position size scaling factors during drawdown
+  mild_drawdown_scaling: 0.8           # Reduce to 80% of normal size
+  moderate_drawdown_scaling: 0.6       # Reduce to 60% of normal size
+  severe_drawdown_scaling: 0.4         # Reduce to 40% of normal size
+  
+  # Recovery threshold (drawdown must improve by this much to scale back up)
+  recovery_threshold: 0.02             # 2% improvement needed
+
+# Risk Profiles
+risk_profiles:
+  conservative:
+    kelly_scaling_factor: 0.125        # 12.5% of Kelly
+    max_position_cap: 0.02             # 2% max position
+    volatility_multiplier: 0.8         # More conservative in high vol
+    
+  moderate:
+    kelly_scaling_factor: 0.25         # 25% of Kelly (default)
+    max_position_cap: 0.05             # 5% max position
+    volatility_multiplier: 1.0         # Standard volatility scaling
+    
+  aggressive:
+    kelly_scaling_factor: 0.5          # 50% of Kelly
+    max_position_cap: 0.10             # 10% max position
+    volatility_multiplier: 1.2         # Less conservative in high vol
+
+# Signal Confidence Mapping
+confidence_mapping:
+  # Map signal confidence to win probability adjustments
+  confidence_boost_factor: 0.3         # Max boost to win probability
+  confidence_penalty_factor: 0.2       # Max penalty to win probability
+  
+  # Confidence thresholds
+  high_confidence_threshold: 0.8       # Above 80% = high confidence
+  low_confidence_threshold: 0.4        # Below 40% = low confidence
+
+# Position Sizing Constraints
+constraints:
+  # Maximum number of concurrent positions
+  max_concurrent_positions: 5
+  
+  # Maximum total exposure (sum of all position sizes)
+  max_total_exposure: 0.20             # 20% of capital
+  
+  # Correlation limits
+  max_correlation_exposure: 0.15       # 15% in correlated positions
+  correlation_threshold: 0.7           # Correlation above 70%
+  
+  # Currency exposure limits (for FX)
+  max_currency_exposure: 0.30          # 30% exposure to any single currency
+
+# Performance Monitoring
+monitoring:
+  # Track Kelly criterion performance
+  track_kelly_performance: true
+  
+  # Performance measurement window
+  performance_window_days: 30
+  
+  # Alert thresholds
+  alert_win_rate_deviation: 0.1        # Alert if win rate deviates by 10%
+  alert_sizing_efficiency: 0.7         # Alert if sizing efficiency < 70%
+  
+  # Logging level for position sizer
+  log_level: "INFO"
+  
+  # Save sizing decisions for analysis
+  save_sizing_history: true
+  history_retention_days: 90
+
+# Emergency Controls
+emergency_controls:
+  # Emergency position size cap (extreme market conditions)
+  emergency_max_position: 0.01         # 1% emergency cap
+  
+  # Triggers for emergency mode
+  max_daily_loss_threshold: 0.05       # 5% daily loss triggers emergency
+  volatility_spike_threshold: 3.0      # 3x normal volatility triggers emergency
+  
+  # Emergency mode duration
+  emergency_mode_duration_hours: 24    # Stay in emergency mode for 24 hours
+  
+  # Recovery conditions
+  recovery_stability_period: 4         # 4 hours of stability to exit emergency
+
+# Backtesting Parameters
+backtesting:
+  # Historical data for Kelly optimization
+  optimization_period_days: 252        # 1 year of data for optimization
+  
+  # Walk-forward analysis
+  walk_forward_window: 60              # 60-day optimization window
+  walk_forward_step: 10                # Re-optimize every 10 days
+  
+  # Kelly parameter bounds for optimization
+  min_kelly_scaling: 0.05              # Minimum 5% of Kelly
+  max_kelly_scaling: 1.0               # Maximum 100% of Kelly 

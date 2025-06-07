@@ -1,0 +1,222 @@
+# MetaTrader 5 Configuration - Demo Mode
+# Configuration for MT5 integration with the FX AI-Quant Trading System
+
+mt5:
+  # Connection Settings
+  login: 210112936  # Replace with your demo account login
+  password: "Twizb17/0317"  # Replace with your demo account password
+  server: "Exness-MT5Trial9"  # Replace with your broker's demo server
+  path: null  # Path to MT5 terminal (null for auto-detection)
+  timeout: 60000  # Connection timeout in milliseconds
+  portable: false  # Use portable mode
+  
+  # Trading Settings
+  magic_number: 12345  # Unique identifier for AI-Quant trades
+  default_deviation: 20  # Default price deviation in points
+  default_volume: 0.01  # Default lot size
+  max_volume: 10.0  # Maximum lot size
+  min_volume: 0.01  # Minimum lot size
+  
+  # Connection Management
+  max_retries: 5  # Maximum reconnection attempts
+  retry_delay: 5.0  # Delay between reconnection attempts (seconds)
+  heartbeat_interval: 30.0  # Heartbeat check interval (seconds)
+  
+  # Allowed Symbols (Major Pairs)
+  allowed_symbols:
+    - "EURUSD"
+    - "GBPUSD"
+    - "USDJPY"
+    - "USDCHF"
+    - "AUDUSD"
+    - "USDCAD"
+    - "NZDUSD"
+    - "EURJPY"
+    - "EURGBP"
+    - "GBPJPY"
+    - "AUDJPY"
+    - "CADJPY"
+    - "CHFJPY"
+    - "NZDJPY"
+    - "EURCHF"
+    - "EURAUD"
+    - "EURCAD"
+    - "EURNZD"
+    - "GBPCHF"
+    - "GBPAUD"
+    - "GBPCAD"
+    - "GBPNZD"
+    - "AUDCHF"
+    - "AUDCAD"
+    - "AUDNZD"
+    - "CADCHF"
+    - "NZDCHF"
+    - "NZDCAD"
+
+# Risk Management Settings
+risk_management:
+  # Position Sizing
+  max_risk_per_trade: 0.02  # 2% of account per trade
+  max_daily_risk: 0.06  # 6% of account per day
+  max_open_positions: 10  # Maximum concurrent positions
+  max_positions_per_symbol: 2  # Maximum positions per symbol
+  
+  # Stop Loss and Take Profit
+  default_stop_loss_pips: 50  # Default stop loss in pips
+  default_take_profit_pips: 100  # Default take profit in pips
+  max_stop_loss_pips: 200  # Maximum allowed stop loss
+  min_stop_loss_pips: 10  # Minimum required stop loss
+  
+  # Margin Management
+  max_margin_usage: 0.8  # Maximum 80% margin usage
+  margin_call_level: 0.5  # Margin call at 50%
+  stop_out_level: 0.2  # Stop out at 20%
+
+# Execution Settings
+execution:
+  # Order Types
+  default_order_type: "MARKET"  # MARKET, LIMIT, STOP
+  default_fill_policy: "IOC"  # IOC (Immediate or Cancel), FOK (Fill or Kill)
+  default_time_in_force: "GTC"  # GTC (Good Till Cancelled), DAY
+  
+  # Slippage Control
+  max_slippage_pips: 3  # Maximum acceptable slippage
+  slippage_tolerance: 0.5  # Slippage tolerance factor
+  
+  # Timing
+  order_timeout: 30  # Order timeout in seconds
+  execution_timeout: 10  # Execution timeout in seconds
+  retry_attempts: 3  # Number of retry attempts for failed orders
+  retry_delay: 1.0  # Delay between retries in seconds
+  
+  # Quality Control
+  min_execution_quality: 0.8  # Minimum execution quality score
+  max_execution_time_ms: 1000  # Maximum execution time in milliseconds
+  quality_monitoring: true  # Enable execution quality monitoring
+
+# Market Data Settings
+market_data:
+  # Symbol Selection
+  primary_symbols:
+    - "EURUSD"
+    - "GBPUSD"
+    - "USDJPY"
+    - "USDCHF"
+  
+  # Data Quality
+  max_spread_pips: 5  # Maximum acceptable spread
+  min_liquidity: 1000  # Minimum liquidity requirement
+  data_validation: true  # Enable data validation
+  
+  # Timing
+  tick_timeout: 5  # Tick data timeout in seconds
+  price_staleness_threshold: 10  # Price staleness threshold in seconds
+
+# Logging and Monitoring
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_trades: true  # Log all trade activities
+  log_connections: true  # Log connection events
+  log_errors: true  # Log error events
+  log_performance: true  # Log performance metrics
+  
+  # File Logging
+  log_to_file: true
+  log_file: "logs/mt5_connector.log"
+  max_log_size: "10MB"
+  backup_count: 5
+
+# Performance Monitoring
+monitoring:
+  # Metrics Collection
+  collect_metrics: true
+  metrics_interval: 60  # Metrics collection interval in seconds
+  
+  # Performance Thresholds
+  max_latency_ms: 100  # Maximum acceptable latency
+  min_success_rate: 0.95  # Minimum success rate (95%)
+  max_error_rate: 0.05  # Maximum error rate (5%)
+  
+  # Alerts
+  enable_alerts: true
+  alert_on_disconnect: true
+  alert_on_high_latency: true
+  alert_on_execution_failure: true
+  alert_on_margin_warning: true
+
+# Demo Mode Specific Settings
+demo_mode:
+  enabled: true  # Enable demo mode
+  virtual_balance: 10000.0  # Virtual account balance
+  simulate_slippage: true  # Simulate realistic slippage
+  simulate_latency: true  # Simulate network latency
+  max_simulated_latency_ms: 50  # Maximum simulated latency
+  
+  # Demo Restrictions
+  max_demo_volume: 1.0  # Maximum lot size in demo
+  demo_symbols_only: false  # Restrict to demo symbols only
+  
+  # Testing Features
+  enable_backtesting: false  # Enable backtesting mode
+  historical_data_source: "mt5"  # Historical data source
+  test_data_path: "data/test/"  # Path to test data
+
+# Integration Settings
+integration:
+  # Execution Engine Integration
+  execution_engine:
+    enabled: true
+    callback_url: null  # Callback URL for execution updates
+    webhook_secret: null  # Webhook secret for security
+  
+  # Risk Manager Integration
+  risk_manager:
+    enabled: true
+    validate_orders: true  # Validate orders with risk manager
+    real_time_monitoring: true  # Real-time risk monitoring
+  
+  # Data Feed Integration
+  data_feed:
+    enabled: true
+    real_time_prices: true  # Use real-time price feeds
+    historical_data: true  # Access historical data
+  
+  # Notification Integration
+  notifications:
+    enabled: true
+    channels: ["log", "console"]  # Available: log, console, email, slack
+    trade_notifications: true  # Notify on trade events
+    error_notifications: true  # Notify on errors
+    performance_notifications: false  # Notify on performance issues
+
+# Security Settings
+security:
+  # API Security
+  api_key_required: false  # Require API key for access
+  rate_limiting: true  # Enable rate limiting
+  max_requests_per_minute: 100  # Maximum requests per minute
+  
+  # Connection Security
+  secure_connection: true  # Use secure connection
+  certificate_validation: true  # Validate SSL certificates
+  
+  # Data Protection
+  encrypt_credentials: false  # Encrypt stored credentials
+  mask_sensitive_data: true  # Mask sensitive data in logs
+
+# Development Settings
+development:
+  # Debug Features
+  debug_mode: false  # Enable debug mode
+  verbose_logging: false  # Enable verbose logging
+  trace_execution: false  # Trace execution flow
+  
+  # Testing
+  mock_mt5: false  # Use mock MT5 for testing
+  test_mode: false  # Enable test mode
+  dry_run: false  # Dry run mode (no actual trades)
+  
+  # Development Tools
+  profiling: false  # Enable performance profiling
+  memory_monitoring: false  # Monitor memory usage
+  cpu_monitoring: false  # Monitor CPU usage 

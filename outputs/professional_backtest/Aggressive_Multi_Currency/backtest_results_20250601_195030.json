@@ -1,0 +1,86 @@
+{
+  "config": {
+    "symbols": [
+      "EURUSD",
+      "GBPUSD",
+      "USDJPY"
+    ],
+    "timeframe": "1m",
+    "start_date": "2024-01-01T00:00:00",
+    "end_date": "2024-01-31T00:00:00",
+    "initial_capital": 250000.0,
+    "mode": "full_pipeline"
+  },
+  "performance": {
+    "total_return": -0.9844367128794663,
+    "annualized_return": 0.0,
+    "volatility": 0.0,
+    "sharpe_ratio": 0.0,
+    "sortino_ratio": 0.0,
+    "calmar_ratio": 0.0,
+    "max_drawdown": 0.9844367128794663,
+    "max_drawdown_duration": 0.0,
+    "win_rate": 0.04480651731160896,
+    "profit_factor": 0.009925961234003342,
+    "total_trades": 491,
+    "total_commission": 982.0,
+    "total_slippage": 0.0
+  },
+  "execution": {
+    "total_orders": 919,
+    "filled_orders": 861,
+    "rejected_orders": 12,
+    "partial_fills": 46,
+    "fill_rate": 0.9368879216539717,
+    "total_fills": 907,
+    "total_commission": 1814.0,
+    "total_slippage": 0.06685439713417292,
+    "avg_commission_per_fill": 2.0,
+    "avg_slippage_per_fill": 7.370936839489847e-05,
+    "pending_orders": 46
+  },
+  "regime_performance": {
+    "trending": {
+      "total_return": 0.0,
+      "volatility": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "win_rate": 0.0,
+      "num_periods": 0
+    },
+    "ranging": {
+      "total_return": 0.0,
+      "volatility": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "win_rate": 0.0,
+      "num_periods": 0
+    },
+    "volatile": {
+      "total_return": 0.0,
+      "volatility": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "win_rate": 0.0,
+      "num_periods": 0
+    }
+  },
+  "final_equity": 3890.8217801334213,
+  "final_positions": {
+    "GBPUSD": {
+      "quantity": -18401.8446058106,
+      "avg_price": 0.012701937542607029,
+      "unrealized_pnl": 0.0
+    },
+    "USDJPY": {
+      "quantity": -330.0019140451893,
+      "avg_price": 0.23202353363377154,
+      "unrealized_pnl": 0.0
+    },
+    "EURUSD": {
+      "quantity": 418.94825149255246,
+      "avg_price": 1.1031257111741715,
+      "unrealized_pnl": 0.0
+    }
+  }
+}

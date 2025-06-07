@@ -1,0 +1,159 @@
+# Secure Configuration for FX AI-Quant Trading System
+# This file demonstrates secure configuration management with secret references
+
+# Trading Configuration
+trading:
+  risk_per_trade: 0.02  # 2% risk per trade
+  max_positions: 10
+  environment: "paper"  # paper or live
+  
+  # Broker settings using secret references
+  broker:
+    name: "oanda"
+    api_url: "https://api-fxpractice.oanda.com"  # Practice environment
+    token: "secret://api/oanda_token"  # Reference to encrypted secret
+    account_id: "secret://api/oanda_account_id"
+    
+  # Trading Economics API
+  economic_data:
+    provider: "trading_economics"
+    api_key: "secret://api/trading_economics_key"
+    base_url: "https://api.tradingeconomics.com"
+    rate_limit: 5000  # requests per hour
+
+# Database Configuration
+database:
+  host: "localhost"
+  port: 5432
+  name: "fx_trading_db"
+  # Credentials stored as secrets
+  username: "secret://database/username"
+  password: "secret://database/password"
+  ssl_mode: "require"
+  connection_timeout: 30
+  pool_size: 10
+
+# Message Bus Configuration
+message_bus:
+  type: "zeromq"
+  # ZeroMQ CURVE security
+  curve_enabled: true
+  server_public_key: "secret://system/zmq_server_public"
+  server_secret_key: "secret://system/zmq_server_secret"
+  client_public_key: "secret://system/zmq_client_public"
+  client_secret_key: "secret://system/zmq_client_secret"
+  
+  # Endpoints
+  data_publisher: "tcp://localhost:5555"
+  signal_publisher: "tcp://localhost:5556"
+  order_gateway: "tcp://localhost:5557"
+
+# Redis Configuration (for caching)
+redis:
+  host: "localhost"
+  port: 6379
+  password: "secret://database/redis_password"
+  db: 0
+  ssl: false
+  socket_timeout: 5
+
+# API Server Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  # TLS configuration
+  tls:
+    enabled: true
+    cert_file: "secret://system/tls_cert_path"
+    key_file: "secret://system/tls_key_path"
+  
+  # Rate limiting
+  rate_limit: 1000  # requests per minute
+  
+  # Authentication
+  jwt_secret: "secret://api/jwt_secret"
+  jwt_expire_hours: 24
+
+# Monitoring Configuration
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9000
+    path: "/metrics"
+  
+  grafana:
+    enabled: true
+    port: 3000
+    
+  # Log aggregation
+  logging:
+    level: "INFO"
+    file: "logs/trading_system.log"
+    max_size_mb: 100
+    backup_count: 5
+    
+  # Alerting
+  alerts:
+    enabled: true
+    webhook_url: "secret://monitoring/alert_webhook"
+    email_recipients:
+      - "secret://monitoring/admin_email"
+
+# Security Configuration
+security:
+  # Encryption settings
+  encryption:
+    algorithm: "AES-256-GCM"
+    key_rotation_days: 30
+    
+  # TLS settings
+  tls:
+    enabled: true
+    min_version: "1.2"
+    ciphers:
+      - "ECDHE-RSA-AES256-GCM-SHA384"
+      - "ECDHE-RSA-AES128-GCM-SHA256"
+      
+  # Access control
+  rbac:
+    enabled: true
+    default_role: "public"
+    session_timeout_minutes: 30
+    
+  # Audit settings
+  audit:
+    enabled: true
+    log_directory: "logs"
+    retention_days: 90
+    max_file_size_mb: 50
+
+# AI/ML Configuration
+ai:
+  model_paths:
+    momentum: "models/momentum_model.pkl"
+    mean_reversion: "models/mean_reversion_model.pkl"
+    breakout: "models/breakout_model.pkl"
+    
+  # Feature engineering
+  features:
+    technical_indicators: true
+    economic_indicators: true
+    sentiment_analysis: false  # Disabled in development
+    
+  # Model serving
+  inference:
+    batch_size: 100
+    timeout_seconds: 5
+    
+# Development/Testing Configuration
+development:
+  debug: true
+  hot_reload: true
+  mock_broker: true
+  sample_data: true
+  
+  # Test data configuration
+  test_data:
+    start_date: "2023-01-01"
+    end_date: "2023-12-31"
+    symbols: ["EURUSD", "GBPUSD", "USDJPY"] 

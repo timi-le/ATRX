@@ -1,0 +1,221 @@
+# FIX Session Configuration for Interactive Brokers (IBKR)
+# Production-ready configuration for FIX 4.2/4.4 protocol integration
+
+fix_session:
+  # Connection Settings
+  host: "127.0.0.1"  # IBKR Gateway/TWS host (localhost for local gateway)
+  port: 4001         # FIX API port (4001 for live, 4002 for paper trading)
+  use_ssl: true      # Enable SSL/TLS encryption
+  ssl_verify: true   # Verify SSL certificates
+  
+  # FIX Protocol Settings
+  fix_version: "FIX.4.2"  # Supported: FIX.4.2, FIX.4.4
+  begin_string: "FIX.4.2"
+  
+  # Session Identity
+  sender_comp_id: "CLIENT"      # Your CompID (provided by IBKR)
+  target_comp_id: "IB"          # IBKR's CompID
+  sender_sub_id: ""             # Optional SenderSubID
+  target_sub_id: ""             # Optional TargetSubID
+  
+  # Authentication (if required)
+  username: ""                  # IBKR username (if password auth enabled)
+  password: ""                  # IBKR password (if password auth enabled)
+  
+  # Session Management
+  heartbeat_interval: 30        # Heartbeat interval in seconds
+  logon_timeout: 30            # Logon timeout in seconds
+  logout_timeout: 10           # Logout timeout in seconds
+  
+  # Sequence Numbers
+  reset_on_logon: false        # Reset sequence numbers on logon
+  reset_on_logout: false       # Reset sequence numbers on logout
+  reset_on_disconnect: false   # Reset sequence numbers on disconnect
+  
+  # Reconnection Settings
+  auto_reconnect: true         # Enable automatic reconnection
+  max_reconnect_attempts: 10   # Maximum reconnection attempts
+  reconnect_interval: 5        # Initial reconnection interval (seconds)
+  reconnect_backoff: 2.0       # Backoff multiplier for reconnection
+  max_reconnect_interval: 300  # Maximum reconnection interval (seconds)
+  
+  # Message Settings
+  validate_length: true        # Validate message length
+  validate_checksum: true      # Validate message checksum
+  validate_sequence: true      # Validate sequence numbers
+  
+  # Logging and Persistence
+  log_incoming: true           # Log incoming messages
+  log_outgoing: true           # Log outgoing messages
+  persist_messages: true       # Persist messages to disk
+  message_store_path: "data/fix_messages"  # Path for message storage
+  
+  # Performance Settings
+  send_buffer_size: 8192       # TCP send buffer size
+  recv_buffer_size: 8192       # TCP receive buffer size
+  socket_timeout: 30           # Socket timeout in seconds
+  
+  # Order Settings
+  default_currency: "USD"      # Default currency for orders
+  default_exchange: "SMART"    # Default exchange routing
+  
+# Message Type Configuration
+message_types:
+  # Administrative Messages
+  heartbeat: "0"              # Heartbeat
+  test_request: "1"           # Test Request
+  resend_request: "2"         # Resend Request
+  reject: "3"                 # Reject
+  sequence_reset: "4"         # Sequence Reset
+  logout: "5"                 # Logout
+  logon: "A"                  # Logon
+  
+  # Application Messages
+  order_single: "D"           # New Order Single
+  order_cancel_request: "F"   # Order Cancel Request
+  order_cancel_replace: "G"   # Order Cancel/Replace Request
+  execution_report: "8"       # Execution Report
+  order_cancel_reject: "9"    # Order Cancel Reject
+  business_message_reject: "j" # Business Message Reject
+  
+  # Market Data Messages (if needed)
+  market_data_request: "V"    # Market Data Request
+  market_data_snapshot: "W"   # Market Data Snapshot
+  market_data_incremental: "X" # Market Data Incremental Refresh
+  market_data_reject: "Y"     # Market Data Request Reject
+
+# Field Definitions (Common FIX Tags)
+fix_fields:
+  # Header Fields
+  begin_string: 8             # BeginString
+  body_length: 9              # BodyLength
+  msg_type: 35                # MsgType
+  sender_comp_id: 49          # SenderCompID
+  target_comp_id: 56          # TargetCompID
+  msg_seq_num: 34             # MsgSeqNum
+  sending_time: 52            # SendingTime
+  checksum: 10                # CheckSum
+  
+  # Session Fields
+  heartbt_int: 108            # HeartBtInt
+  test_req_id: 112            # TestReqID
+  username: 553               # Username
+  password: 554               # Password
+  reset_seq_num_flag: 141     # ResetSeqNumFlag
+  
+  # Order Fields
+  cl_ord_id: 11               # ClOrdID
+  order_id: 37                # OrderID
+  orig_cl_ord_id: 41          # OrigClOrdID
+  ord_status: 39              # OrdStatus
+  symbol: 55                  # Symbol
+  side: 54                    # Side
+  order_qty: 38               # OrderQty
+  ord_type: 40                # OrdType
+  price: 44                   # Price
+  stop_px: 99                 # StopPx
+  time_in_force: 59           # TimeInForce
+  exec_id: 17                 # ExecID
+  exec_type: 150              # ExecType
+  exec_trans_type: 20         # ExecTransType
+  last_qty: 32                # LastQty
+  last_px: 31                 # LastPx
+  leaves_qty: 151             # LeavesQty
+  cum_qty: 14                 # CumQty
+  avg_px: 6                   # AvgPx
+  
+  # Additional Fields
+  currency: 15                # Currency
+  exchange: 207               # SecurityExchange
+  security_type: 167          # SecurityType
+  text: 58                    # Text
+  transact_time: 60           # TransactTime
+
+# Order Status Mappings
+order_status:
+  NEW: "0"                    # New
+  PARTIALLY_FILLED: "1"       # Partially filled
+  FILLED: "2"                 # Filled
+  DONE_FOR_DAY: "3"          # Done for day
+  CANCELED: "4"               # Canceled
+  REPLACED: "5"               # Replaced
+  PENDING_CANCEL: "6"         # Pending Cancel
+  STOPPED: "7"                # Stopped
+  REJECTED: "8"               # Rejected
+  SUSPENDED: "9"              # Suspended
+  PENDING_NEW: "A"            # Pending New
+  CALCULATED: "B"             # Calculated
+  EXPIRED: "C"                # Expired
+  ACCEPTED_FOR_BIDDING: "D"   # Accepted for Bidding
+  PENDING_REPLACE: "E"        # Pending Replace
+
+# Side Mappings
+side:
+  BUY: "1"                    # Buy
+  SELL: "2"                   # Sell
+  BUY_MINUS: "3"             # Buy minus
+  SELL_PLUS: "4"             # Sell plus
+  SELL_SHORT: "5"            # Sell short
+  SELL_SHORT_EXEMPT: "6"     # Sell short exempt
+
+# Order Type Mappings
+order_type:
+  MARKET: "1"                 # Market
+  LIMIT: "2"                  # Limit
+  STOP: "3"                   # Stop
+  STOP_LIMIT: "4"            # Stop limit
+  MARKET_ON_CLOSE: "5"       # Market on close
+  WITH_OR_WITHOUT: "6"       # With or without
+  LIMIT_OR_BETTER: "7"       # Limit or better
+  LIMIT_WITH_OR_WITHOUT: "8" # Limit with or without
+  ON_BASIS: "9"              # On basis
+
+# Time in Force Mappings
+time_in_force:
+  DAY: "0"                    # Day
+  GOOD_TILL_CANCEL: "1"      # Good Till Cancel (GTC)
+  AT_THE_OPENING: "2"        # At the Opening (OPG)
+  IMMEDIATE_OR_CANCEL: "3"   # Immediate or Cancel (IOC)
+  FILL_OR_KILL: "4"          # Fill or Kill (FOK)
+  GOOD_TILL_CROSSING: "5"    # Good Till Crossing (GTX)
+  GOOD_TILL_DATE: "6"        # Good Till Date (GTD)
+
+# Execution Type Mappings
+exec_type:
+  NEW: "0"                    # New
+  PARTIAL_FILL: "1"          # Partial fill
+  FILL: "2"                  # Fill
+  DONE_FOR_DAY: "3"          # Done for day
+  CANCELED: "4"              # Canceled
+  REPLACED: "5"              # Replaced
+  PENDING_CANCEL: "6"        # Pending Cancel
+  STOPPED: "7"               # Stopped
+  REJECTED: "8"              # Rejected
+  SUSPENDED: "9"             # Suspended
+  PENDING_NEW: "A"           # Pending New
+  CALCULATED: "B"            # Calculated
+  EXPIRED: "C"               # Expired
+  RESTATED: "D"              # Restated
+  PENDING_REPLACE: "E"       # Pending Replace
+  TRADE: "F"                 # Trade
+  TRADE_CORRECT: "G"         # Trade Correct
+  TRADE_CANCEL: "H"          # Trade Cancel
+  ORDER_STATUS: "I"          # Order Status
+
+# Environment-specific overrides
+environments:
+  paper:
+    host: "127.0.0.1"
+    port: 4002
+    sender_comp_id: "PAPER_CLIENT"
+    
+  live:
+    host: "127.0.0.1"
+    port: 4001
+    sender_comp_id: "LIVE_CLIENT"
+    
+  demo:
+    host: "127.0.0.1"
+    port: 4002
+    sender_comp_id: "DEMO_CLIENT"
+    reset_on_logon: true 

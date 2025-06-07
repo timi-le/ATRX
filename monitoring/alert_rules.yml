@@ -1,0 +1,207 @@
+groups:
+  - name: fx_trading_critical_alerts
+    rules:
+      - alert: HighDrawdown
+        expr: fxai_current_drawdown_ratio > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          component: risk_management
+        annotations:
+          summary: "Critical: High drawdown detected"
+          description: "Current drawdown is {{ $value | humanizePercentage }}, exceeding 5% threshold"
+          runbook_url: "https://docs.company.com/runbooks/high-drawdown"
+
+      - alert: SystemDown
+        expr: up{job="fx-ai-trading-system"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "Critical: FX Trading System is down"
+          description: "The FX trading system is not responding to health checks"
+
+      - alert: ExcessiveErrors
+        expr: rate(fxai_errors_total[5m]) > 0.1
+        for: 1m
+        labels:
+          severity: critical
+          component: "{{ $labels.component }}"
+        annotations:
+          summary: "Critical: High error rate detected"
+          description: "Error rate is {{ $value }} errors/second in {{ $labels.component }}"
+
+  - name: fx_trading_warning_alerts
+    rules:
+      - alert: HighExecutionLatency
+        expr: rate(fxai_execution_latency_seconds_sum[5m]) / rate(fxai_execution_latency_seconds_count[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: execution_engine
+        annotations:
+          summary: "Warning: High execution latency"
+          description: "Average execution latency is {{ $value }}s, exceeding 100ms threshold"
+
+      - alert: LowFillRate
+        expr: avg(fxai_fill_rate_ratio) < 0.8
+        for: 3m
+        labels:
+          severity: warning
+          component: broker_connection
+        annotations:
+          summary: "Warning: Low fill rate"
+          description: "Fill rate is {{ $value | humanizePercentage }}, below 80% threshold"
+
+      - alert: HighSlippage
+        expr: rate(fxai_order_slippage_pips_sum[5m]) / rate(fxai_order_slippage_pips_count[5m]) > 3.0
+        for: 2m
+        labels:
+          severity: warning
+          component: execution_quality
+        annotations:
+          summary: "Warning: High order slippage"
+          description: "Average slippage is {{ $value }} pips, exceeding 3 pip threshold"
+
+      - alert: MarketDataLag
+        expr: max(fxai_market_data_lag_seconds) > 0.5
+        for: 1m
+        labels:
+          severity: warning
+          component: market_data
+        annotations:
+          summary: "Warning: Market data lag detected"
+          description: "Market data lag is {{ $value }}s for {{ $labels.symbol }}"
+
+      - alert: LowWinRate
+        expr: avg(fxai_win_rate_ratio) < 0.4
+        for: 10m
+        labels:
+          severity: warning
+          component: strategy_performance
+        annotations:
+          summary: "Warning: Low win rate"
+          description: "Overall win rate is {{ $value | humanizePercentage }}, below 40%"
+
+      - alert: HighCPUUsage
+        expr: fxai_cpu_usage_percent > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: system_resources
+        annotations:
+          summary: "Warning: High CPU usage"
+          description: "CPU usage is {{ $value }}%, exceeding 85% threshold"
+
+      - alert: HighMemoryUsage
+        expr: fxai_memory_usage_mb > 2048
+        for: 5m
+        labels:
+          severity: warning
+          component: system_resources
+        annotations:
+          summary: "Warning: High memory usage"
+          description: "Memory usage is {{ $value }}MB, exceeding 2GB threshold"
+
+  - name: fx_trading_info_alerts
+    rules:
+      - alert: PositionExposureHigh
+        expr: fxai_total_exposure_usd > 500000
+        for: 1m
+        labels:
+          severity: info
+          component: position_management
+        annotations:
+          summary: "Info: High position exposure"
+          description: "Total position exposure is ${{ $value }}, exceeding $500K"
+
+      - alert: NoTradesExecuted
+        expr: rate(fxai_trades_total[10m]) == 0
+        for: 5m
+        labels:
+          severity: info
+          component: trading_activity
+        annotations:
+          summary: "Info: No trades executed recently"
+          description: "No trades have been executed in the last 10 minutes"
+
+      - alert: RegimeChangeDetected
+        expr: |
+          (
+            abs(
+              fxai_regime_ratio{regime="trending"} - 
+              fxai_regime_ratio{regime="trending"} offset 1h
+            ) > 0.3
+          )
+        for: 1m
+        labels:
+          severity: info
+          component: regime_detection
+        annotations:
+          summary: "Info: Significant regime change detected"
+          description: "Regime distribution for {{ $labels.symbol }} has changed significantly"
+
+      - alert: NewDailyPnLRecord
+        expr: fxai_daily_pnl > 5000 or fxai_daily_pnl < -2000
+        for: 1m
+        labels:
+          severity: info
+          component: performance
+        annotations:
+          summary: "Info: Significant daily PnL"
+          description: "Daily PnL is ${{ $value }}, indicating significant performance"
+
+  - name: fx_trading_strategy_alerts
+    rules:
+      - alert: StrategyUnderperformance
+        expr: fxai_strategy_pnl < -1000
+        for: 5m
+        labels:
+          severity: warning
+          component: "strategy_{{ $labels.strategy }}"
+        annotations:
+          summary: "Warning: Strategy underperformance"
+          description: "Strategy {{ $labels.strategy }} PnL is ${{ $value }}, below -$1000"
+
+      - alert: SharpeRatioLow
+        expr: fxai_sharpe_ratio < 0.5
+        for: 15m
+        labels:
+          severity: warning
+          component: performance_metrics
+        annotations:
+          summary: "Warning: Low Sharpe ratio"
+          description: "Current Sharpe ratio is {{ $value }}, below 0.5 threshold"
+
+      - alert: ExcessiveDrawdown
+        expr: fxai_max_drawdown_ratio > 0.1
+        for: 1m
+        labels:
+          severity: critical
+          component: risk_management
+        annotations:
+          summary: "Critical: Excessive maximum drawdown"
+          description: "Maximum drawdown is {{ $value | humanizePercentage }}, exceeding 10%"
+
+  - name: fx_trading_data_quality_alerts
+    rules:
+      - alert: MarketDataStale
+        expr: rate(fxai_market_data_updates_total[1m]) == 0
+        for: 2m
+        labels:
+          severity: warning
+          component: market_data
+        annotations:
+          summary: "Warning: Market data appears stale"
+          description: "No market data updates received for {{ $labels.symbol }} in 1 minute"
+
+      - alert: ExceptionSpike
+        expr: rate(fxai_exceptions_total[2m]) > 0.05
+        for: 1m
+        labels:
+          severity: warning
+          component: "{{ $labels.component }}"
+        annotations:
+          summary: "Warning: Exception rate spike"
+          description: "Exception rate is {{ $value }}/second for {{ $labels.exception_type }} in {{ $labels.component }}" 

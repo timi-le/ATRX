@@ -1,0 +1,113 @@
+# Regime Detection Configuration for FX AI-Quant Trading System
+# Configuration parameters for different regime detection algorithms
+
+# HMM Parameters
+hmm:
+  n_states: 3
+  covariance_type: "full"  # full, diag, tied, spherical
+  n_iter: 100
+  convergence_threshold: 1e-6
+  random_state: 42
+
+# Clustering Parameters   
+clustering:
+  kmeans:
+    n_clusters: 3
+    max_iter: 300
+    n_init: 10
+    random_state: 42
+  
+  gmm:
+    n_components: 3
+    covariance_type: "full"
+    max_iter: 100
+    random_state: 42
+  
+  dbscan:
+    eps: 0.5
+    min_samples: 5
+    metric: "euclidean"
+
+# Rule-based Thresholds
+rules:
+  volatility:
+    high_threshold: 0.7
+    low_threshold: 0.3
+  
+  momentum:
+    threshold: 0.6
+  
+  adx:
+    trending_threshold: 25
+    strong_trend_threshold: 40
+  
+  rsi:
+    oversold: 30
+    overbought: 70
+    neutral_range: 20
+
+# Feature Engineering
+features:
+  volatility_window: 20
+  momentum_window: 14
+  macro_weight: 0.3
+  
+  # Normalization
+  use_zscore: true
+  use_minmax: false
+  
+  # Feature selection
+  min_variance_threshold: 0.01
+
+# Ensemble Configuration
+ensemble:
+  detectors:
+    - type: "hmm"
+      weight: 0.4
+      enabled: true
+    - type: "kmeans" 
+      weight: 0.3
+      enabled: true
+    - type: "gmm"
+      weight: 0.2
+      enabled: true
+    - type: "rules"
+      weight: 0.1
+      enabled: true
+
+# Regime Mapping
+regimes:
+  trending:
+    description: "Strong directional movement with high momentum"
+    characteristics:
+      min_adx: 25
+      min_momentum: 0.3
+      volatility_range: [0.3, 0.8]
+  
+  mean_reverting:
+    description: "Range-bound market with mean reversion"
+    characteristics:
+      max_adx: 25
+      max_momentum: 0.2
+      volatility_range: [0.1, 0.4]
+      rsi_range: [30, 70]
+  
+  choppy:
+    description: "High volatility with low directional bias"
+    characteristics:
+      min_volatility: 0.6
+      max_momentum: 0.3
+      max_trend_strength: 0.2
+
+# Performance Monitoring
+monitoring:
+  min_confidence: 0.6
+  regime_stability_window: 10
+  transition_dampening: 0.8
+
+# Validation
+validation:
+  min_samples_training: 100
+  cross_validation_folds: 5
+  test_split: 0.2
+  purity_threshold: 0.8 

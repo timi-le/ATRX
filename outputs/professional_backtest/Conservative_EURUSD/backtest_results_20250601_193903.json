@@ -1,0 +1,74 @@
+{
+  "config": {
+    "symbols": [
+      "EURUSD"
+    ],
+    "timeframe": "5m",
+    "start_date": "2024-01-01T00:00:00",
+    "end_date": "2024-01-31T00:00:00",
+    "initial_capital": 100000.0,
+    "mode": "full_pipeline"
+  },
+  "performance": {
+    "total_return": -0.40813636901710715,
+    "annualized_return": 0.0,
+    "volatility": 0.0,
+    "sharpe_ratio": 0.0,
+    "sortino_ratio": 0.0,
+    "calmar_ratio": 0.0,
+    "max_drawdown": 0.40813636901710715,
+    "max_drawdown_duration": 0.0,
+    "win_rate": 0.018867924528301886,
+    "profit_factor": 0.01607459248229528,
+    "total_trades": 159,
+    "total_commission": 318.0,
+    "total_slippage": 0.0
+  },
+  "execution": {
+    "total_orders": 274,
+    "filled_orders": 255,
+    "rejected_orders": 4,
+    "partial_fills": 15,
+    "fill_rate": 0.9306569343065694,
+    "total_fills": 270,
+    "total_commission": 540.0,
+    "total_slippage": 0.01814671579096271,
+    "avg_commission_per_fill": 2.0,
+    "avg_slippage_per_fill": 6.721005848504708e-05,
+    "pending_orders": 15
+  },
+  "regime_performance": {
+    "trending": {
+      "total_return": 0.0,
+      "volatility": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "win_rate": 0.0,
+      "num_periods": 0
+    },
+    "ranging": {
+      "total_return": 0.0,
+      "volatility": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "win_rate": 0.0,
+      "num_periods": 0
+    },
+    "volatile": {
+      "total_return": 0.0,
+      "volatility": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "win_rate": 0.0,
+      "num_periods": 0
+    }
+  },
+  "final_equity": 59186.36309828929,
+  "final_positions": {
+    "EURUSD": {
+      "quantity": 10228.222812847756,
+      "avg_price": 1.0996016472729284,
+      "unrealized_pnl": 0.0
+    }
+  }
+}

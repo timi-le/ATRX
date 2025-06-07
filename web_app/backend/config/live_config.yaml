@@ -1,0 +1,29 @@
+strategy_parameters:
+  grid_step_factor: 0.5
+  martingale_multiplier: 1.5
+  max_levels: 5
+  breakout_zone_buffer: 0.001
+  risk_per_trade: 0.02
+  max_drawdown: 0.2
+  max_positions: 10
+  volatility_filter_threshold: 0.7
+  session_filter_enabled: true
+  tp_type: dynamic
+  sl_type: dynamic
+  tp_ratio: 2.0
+  sl_ratio: 1.0
+strategy_weights:
+  momentum_weight: 0.3
+  mean_reversion_weight: 0.3
+  breakout_weight: 0.2
+  regime_adaptive_weight: 0.2
+technical_indicators:
+  rsi_period: 14
+  ma_fast_period: 12
+  ma_slow_period: 26
+  bollinger_period: 20
+  bollinger_std: 2.0
+metadata:
+  created: '2025-06-06T11:43:49.047234'
+  version: 1.0.0
+  description: Default parameter configuration

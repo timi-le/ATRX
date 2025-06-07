@@ -1,0 +1,99 @@
+# FX AI-Quant Trading System - Environment Variables Template
+# Copy this file to .env and fill in your actual values
+# DO NOT commit .env files to version control!
+
+# =============================================================================
+# ENVIRONMENT CONFIGURATION
+# =============================================================================
+ENVIRONMENT=development
+# Options: development, staging, production
+
+# =============================================================================
+# API KEYS AND TOKENS
+# =============================================================================
+
+# OANDA Trading API
+OANDA_TOKEN=your_oanda_api_token_here
+OANDA_ACCOUNT_ID=your_oanda_account_id_here
+
+# Trading Economics API
+TRADING_ECONOMICS_API_KEY=your_trading_economics_api_key_here
+
+# Other Financial Data APIs (optional)
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key_here
+POLYGON_API_KEY=your_polygon_api_key_here
+
+# =============================================================================
+# DATABASE CREDENTIALS
+# =============================================================================
+
+# PostgreSQL Database
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=fx_trading_db
+DATABASE_USERNAME=fx_trader
+DATABASE_PASSWORD=your_secure_database_password_here
+
+# Redis Cache
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=your_redis_password_here
+REDIS_DB=0
+
+# =============================================================================
+# MESSAGING AND COMMUNICATION
+# =============================================================================
+
+# Message Bus Configuration
+MESSAGE_BUS_HOST=localhost
+MESSAGE_BUS_PORT=5555
+
+# Email Notifications (optional)
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=your_email@gmail.com
+SMTP_PASSWORD=your_email_app_password_here
+
+# =============================================================================
+# SECURITY CONFIGURATION
+# =============================================================================
+
+# Master encryption key (generate with secrets.token_urlsafe(32))
+MASTER_ENCRYPTION_KEY=generate_a_secure_32_byte_key_here
+
+# JWT Configuration
+JWT_SECRET_KEY=your_jwt_secret_key_here
+JWT_ALGORITHM=HS256
+JWT_EXPIRE_HOURS=24
+
+# =============================================================================
+# MONITORING AND ALERTING
+# =============================================================================
+
+# Grafana Configuration
+GRAFANA_ADMIN_USER=admin
+GRAFANA_ADMIN_PASSWORD=your_grafana_password_here
+
+# Slack Webhooks for Alerts (optional)
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+
+# Discord Webhooks for Alerts (optional)
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR/WEBHOOK
+
+# =============================================================================
+# SECURITY HARDENING
+# =============================================================================
+
+# Rate Limiting
+API_RATE_LIMIT=1000
+API_RATE_PERIOD=3600
+
+# Session Security
+SESSION_TIMEOUT=1800
+MAX_LOGIN_ATTEMPTS=5
+LOCKOUT_DURATION=900
+
+# TLS/SSL Configuration
+TLS_CERT_PATH=config/certs/localhost.crt
+TLS_KEY_PATH=config/certs/localhost.key
+TLS_MIN_VERSION=1.2 

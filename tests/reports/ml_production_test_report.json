@@ -1,0 +1,470 @@
+{
+  "start_time": "2025-05-25T13:39:24.271288",
+  "test_environment": {
+    "available_models": [
+      "lstm",
+      "cnn",
+      "xgboost",
+      "ensemble"
+    ],
+    "lstm_available": true,
+    "cnn_available": true,
+    "ensemble_available": true
+  },
+  "data_generation": {
+    "total_samples": 5000,
+    "train_samples": 3500,
+    "val_samples": 750,
+    "test_samples": 750,
+    "feature_names": [
+      "price_return",
+      "volume",
+      "volatility",
+      "rsi",
+      "macd",
+      "bollinger_upper",
+      "bollinger_lower",
+      "ema_short",
+      "ema_long",
+      "atr",
+      "momentum",
+      "stochastic",
+      "williams_r"
+    ],
+    "data_characteristics": {
+      "y_mean": 0.00047735275956359475,
+      "y_std": 0.012114520912485856,
+      "y_min": -0.07845830608862363,
+      "y_max": 0.09389212876981806
+    }
+  },
+  "model_tests": {
+    "lstm": {
+      "model_type": "lstm",
+      "config": {
+        "model_type": "ModelType.LSTM",
+        "prediction_type": "PredictionType.RETURN_REGRESSION",
+        "input_shape": [
+          60,
+          13
+        ],
+        "output_shape": [
+          1
+        ],
+        "sequence_length": 60,
+        "features_dim": 13,
+        "learning_rate": 0.001,
+        "batch_size": 64,
+        "epochs": 20,
+        "validation_split": 0.2,
+        "early_stopping_patience": 10,
+        "model_path": "models/",
+        "onnx_path": "models/onnx/",
+        "lstm_units": 64,
+        "num_layers": 2,
+        "dropout_rate": 0.2,
+        "recurrent_dropout": 0.2,
+        "use_bidirectional": true
+      },
+      "training_metrics": {
+        "train_loss": 0.00014107160677667707,
+        "val_loss": 0.00016427304944954813,
+        "train_accuracy": null,
+        "val_accuracy": null,
+        "mse": null,
+        "mae": null,
+        "sharpe_ratio": null,
+        "max_drawdown": null,
+        "training_time": 445.4365952014923,
+        "inference_time": 0.0,
+        "memory_usage_mb": 0.3334999084472656
+      },
+      "validation_metrics": {},
+      "test_metrics": {
+        "mse": 0.000164959668968923,
+        "mae": 0.00917416798882114,
+        "rmse": 0.01284366259946605,
+        "sharpe_ratio": 51.500487036836475,
+        "max_drawdown": 0.0
+      },
+      "performance_metrics": {
+        "creation_time": 0.0,
+        "training_time": 445.44144654273987,
+        "avg_inference_time": 0.15482237339019775,
+        "max_inference_time": 2.6727843284606934,
+        "memory_usage_mb": 0.0
+      },
+      "production_tests": {
+        "single_prediction": {
+          "prediction": 0.0002639682497829199,
+          "confidence": 0.9966989536457984,
+          "symbol": "EURUSD",
+          "model_name": "lstm"
+        },
+        "batch_prediction": {
+          "num_predictions": 5,
+          "predictions": [
+            0.0002639682497829199,
+            0.0007352353422902524,
+            0.00017253565602004528
+          ]
+        },
+        "persistence": {
+          "max_prediction_diff": 0.0,
+          "consistent": "True"
+        },
+        "onnx_export": true,
+        "feature_importance": {
+          "available": true,
+          "num_features": 13,
+          "top_features": {
+            "price_return": 0.07692307692307693,
+            "volume": 0.07692307692307693,
+            "volatility": 0.07692307692307693,
+            "rsi": 0.07692307692307693,
+            "macd": 0.07692307692307693
+          }
+        },
+        "edge_cases": {
+          "zero_input": "success",
+          "extreme_values": "success",
+          "nan_handling": "handled_gracefully",
+          "inf_handling": "handled_gracefully"
+        }
+      },
+      "errors": [
+        "Average inference time 0.1548s exceeds benchmark 0.1s"
+      ],
+      "warnings": [
+        "Training time 445.44s exceeds benchmark 300.0s"
+      ],
+      "passed": false
+    },
+    "cnn": {
+      "model_type": "cnn",
+      "config": {
+        "model_type": "ModelType.CNN",
+        "prediction_type": "PredictionType.RETURN_REGRESSION",
+        "input_shape": [
+          60,
+          13
+        ],
+        "output_shape": [
+          1
+        ],
+        "sequence_length": 60,
+        "features_dim": 13,
+        "learning_rate": 0.001,
+        "batch_size": 64,
+        "epochs": 20,
+        "validation_split": 0.2,
+        "early_stopping_patience": 10,
+        "model_path": "models/",
+        "onnx_path": "models/onnx/",
+        "cnn_filters": 64,
+        "kernel_sizes": [
+          3,
+          5,
+          7
+        ],
+        "num_conv_layers": 3,
+        "pool_size": 2,
+        "dropout_rate": 0.3,
+        "use_batch_norm": true
+      },
+      "training_metrics": {
+        "train_loss": 0.0015392901841551065,
+        "val_loss": 0.00016865959332790226,
+        "train_accuracy": null,
+        "val_accuracy": null,
+        "mse": null,
+        "mae": null,
+        "sharpe_ratio": null,
+        "max_drawdown": null,
+        "training_time": 53.33487415313721,
+        "inference_time": 0.0,
+        "memory_usage_mb": 0.6503944396972656
+      },
+      "validation_metrics": {},
+      "test_metrics": {
+        "mse": 0.42005507209181786,
+        "mae": 0.6424164537359106,
+        "rmse": 0.6481165574893284,
+        "sharpe_ratio": -119.14933330876919,
+        "max_drawdown": -1.0
+      },
+      "performance_metrics": {
+        "creation_time": 0.0,
+        "training_time": 53.33886194229126,
+        "avg_inference_time": 0.11164469242095948,
+        "max_inference_time": 0.4895181655883789,
+        "memory_usage_mb": 0.0
+      },
+      "production_tests": {
+        "single_prediction": {
+          "prediction": -0.7831031680107117,
+          "confidence": 0.9974070405635254,
+          "symbol": "EURUSD",
+          "model_name": "cnn"
+        },
+        "batch_prediction": {
+          "num_predictions": 5,
+          "predictions": [
+            -0.7127934098243713,
+            -0.37745553255081177,
+            -0.01759977452456951
+          ]
+        },
+        "persistence": {
+          "max_prediction_diff": 0.0,
+          "consistent": "True"
+        },
+        "onnx_export": true,
+        "feature_importance": {
+          "available": true,
+          "num_features": 13,
+          "top_features": {
+            "price_return": 0.07692307692307693,
+            "volume": 0.07692307692307693,
+            "volatility": 0.07692307692307693,
+            "rsi": 0.07692307692307693,
+            "macd": 0.07692307692307693
+          }
+        },
+        "edge_cases": {
+          "zero_input": "success",
+          "extreme_values": "success",
+          "nan_handling": "handled_gracefully",
+          "inf_handling": "handled_gracefully"
+        }
+      },
+      "errors": [
+        "Average inference time 0.1116s exceeds benchmark 0.1s"
+      ],
+      "warnings": [
+        "Sharpe ratio -119.149 below threshold -2.0"
+      ],
+      "passed": false
+    },
+    "xgboost": {
+      "model_type": "xgboost",
+      "config": {
+        "model_type": "ModelType.XGBOOST",
+        "prediction_type": "PredictionType.RETURN_REGRESSION",
+        "input_shape": [
+          780
+        ],
+        "output_shape": [
+          1
+        ],
+        "sequence_length": 60,
+        "features_dim": 13,
+        "learning_rate": 0.1,
+        "batch_size": 32,
+        "epochs": 100,
+        "validation_split": 0.2,
+        "early_stopping_patience": 10,
+        "model_path": "models/",
+        "onnx_path": "models/onnx/",
+        "n_estimators": 200,
+        "max_depth": 6,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "training_metrics": {
+        "train_loss": 1.98317500893695e-06,
+        "val_loss": 0.00017459695618721058,
+        "train_accuracy": null,
+        "val_accuracy": null,
+        "mse": null,
+        "mae": null,
+        "sharpe_ratio": null,
+        "max_drawdown": null,
+        "training_time": 37.78825283050537,
+        "inference_time": 0.0,
+        "memory_usage_mb": 120.0
+      },
+      "validation_metrics": {},
+      "test_metrics": {
+        "mse": 0.00018250874419884915,
+        "mae": 0.009667766999272862,
+        "rmse": 0.013509579719548982,
+        "sharpe_ratio": 2.3519156857817847,
+        "max_drawdown": -0.06974469870328903
+      },
+      "performance_metrics": {
+        "creation_time": 0.0,
+        "training_time": 37.85166120529175,
+        "avg_inference_time": 0.001562192440032959,
+        "max_inference_time": 0.004931211471557617,
+        "memory_usage_mb": 0.0
+      },
+      "production_tests": {
+        "single_prediction": {
+          "prediction": -0.0028492948040366173,
+          "confidence": 0.7,
+          "symbol": "EURUSD",
+          "model_name": "xgboost"
+        },
+        "batch_prediction": {
+          "num_predictions": 5,
+          "predictions": [
+            -0.0028492948040366173,
+            -0.005642691161483526,
+            0.002731247339397669
+          ]
+        },
+        "persistence": {
+          "max_prediction_diff": 0.0,
+          "consistent": "True"
+        },
+        "onnx_export": true,
+        "feature_importance": {
+          "available": true,
+          "num_features": 780,
+          "top_features": {
+            "feature_743": "0.0046592923",
+            "feature_604": "0.0039630337",
+            "feature_750": "0.003769927",
+            "feature_184": "0.0036145328",
+            "feature_325": "0.003443546"
+          }
+        },
+        "edge_cases": {
+          "zero_input": "success",
+          "extreme_values": "success",
+          "nan_handling": "handled_gracefully",
+          "inf_handling": "error_raised"
+        }
+      },
+      "errors": [],
+      "warnings": [],
+      "passed": true
+    }
+  },
+  "ensemble_test": {
+    "model_type": "ensemble_integration",
+    "individual_models": {
+      "lstm": {
+        "train_loss": 0.00014421883679460734,
+        "val_loss": 0.00016606374992989004,
+        "train_accuracy": null,
+        "val_accuracy": null,
+        "mse": null,
+        "mae": null,
+        "sharpe_ratio": null,
+        "max_drawdown": null,
+        "training_time": 76.6076033115387,
+        "inference_time": 0.0,
+        "memory_usage_mb": 0.046634674072265625
+      },
+      "cnn": {
+        "train_loss": 0.010159577243030071,
+        "val_loss": 0.00022777143749408424,
+        "train_accuracy": null,
+        "val_accuracy": null,
+        "mse": null,
+        "mae": null,
+        "sharpe_ratio": null,
+        "max_drawdown": null,
+        "training_time": 18.26441240310669,
+        "inference_time": 0.0,
+        "memory_usage_mb": 0.22412490844726562
+      },
+      "xgboost": {
+        "train_loss": 8.850948464553708e-05,
+        "val_loss": 0.00016675770997194787,
+        "train_accuracy": null,
+        "val_accuracy": null,
+        "mse": null,
+        "mae": null,
+        "sharpe_ratio": null,
+        "max_drawdown": null,
+        "training_time": 4.506789922714233,
+        "inference_time": 0.0,
+        "memory_usage_mb": 20.0
+      }
+    },
+    "ensemble_performance": {
+      "training": {
+        "train_loss": 0.030636166819224212,
+        "val_loss": 0.03329724456610428,
+        "train_accuracy": null,
+        "val_accuracy": null,
+        "mse": null,
+        "mae": null,
+        "sharpe_ratio": null,
+        "max_drawdown": null,
+        "training_time": 84.31880974769592,
+        "inference_time": 0.0,
+        "memory_usage_mb": 20.27075958251953
+      },
+      "evaluation": {
+        "mse": 0.0271491393647525,
+        "mae": 0.158331609216216,
+        "rmse": 0.16476995892683988,
+        "sharpe_ratio": -56.67626503718686,
+        "max_drawdown": -1.0
+      },
+      "improvement_vs_best": -16347.552971478499,
+      "ensemble_mse": 0.0271491393647525,
+      "individual_mses": {
+        "lstm": 0.00016506491519943116,
+        "cnn": 0.24357840813282186,
+        "xgboost": 0.00017073321487393503
+      },
+      "prediction_test": {
+        "prediction": -0.2700882852077484,
+        "confidence": 0.7242813859770663
+      }
+    },
+    "errors": [],
+    "warnings": [],
+    "passed": true
+  },
+  "summary": {
+    "total_tests": 4,
+    "passed_tests": 2,
+    "failed_tests": 2,
+    "success_rate": 50.0,
+    "performance_summary": {
+      "training_times": {
+        "xgboost": 37.85166120529175
+      },
+      "inference_times": {
+        "xgboost": 0.001562192440032959
+      },
+      "memory_usage": {
+        "xgboost": 0.0
+      },
+      "accuracy_metrics": {
+        "xgboost": {
+          "mse": 0.00018250874419884915,
+          "mae": 0.009667766999272862,
+          "sharpe_ratio": 2.3519156857817847
+        }
+      },
+      "benchmark_compliance": {
+        "xgboost": {
+          "training_time": true,
+          "inference_time": "True",
+          "memory_usage": true
+        },
+        "ensemble": {
+          "training_time": true,
+          "inference_time": true,
+          "memory_usage": true
+        }
+      }
+    },
+    "recommendations": [
+      "\u274c lstm: Failed critical tests - requires investigation",
+      "\u274c cnn: Failed critical tests - requires investigation",
+      "\u2705 Multiple models passed - ensemble approach recommended for production"
+    ]
+  },
+  "passed": false,
+  "end_time": "2025-05-25T13:53:34.918182"
+}
