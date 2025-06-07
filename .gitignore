@@ -47,6 +47,17 @@ venv-py313/
 .roo/
 .taskmaster/
 
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Generated artifacts
+outputs/
+test_reports/
+tests/logs/
+tests/reports/
+tests/test_reports/
+test_models/
+
 # Compiled files
 *.so
 *.o

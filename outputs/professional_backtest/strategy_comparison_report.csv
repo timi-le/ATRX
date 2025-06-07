@@ -1,4 +1,0 @@
-Strategy,Initial_Capital,Final_Equity,Total_Return,Annualized_Return,Volatility,Sharpe_Ratio,Sortino_Ratio,Calmar_Ratio,Max_Drawdown,Max_DD_Duration,Total_Trades,Win_Rate,Profit_Factor,Avg_Win,Avg_Loss,Total_Commission,Fill_Rate,Avg_Slippage
-Conservative_EURUSD,100000.0,100000.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0,0
-Aggressive_Multi_Currency,250000.0,250000.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0,0
-Balanced_Portfolio,500000.0,500000.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0,0.0,0.0,0.0,0.0,0.0,0,0
