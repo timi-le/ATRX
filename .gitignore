@@ -9,8 +9,24 @@ dev-debug.log
 # Dependency directories
 node_modules/
 
-# Environment variables
+# Environment variables and secrets
 .env
+.env.*
+!.env.example
+!.env.template
+*.key
+*.pem
+*.p12
+*.pfx
+
+# API Keys and sensitive configs
+*api*key*
+*secret*
+*token*
+*password*
+config/secrets/
+secrets/
+.secrets
 
 # Editor directories and files
 .idea
@@ -21,11 +37,13 @@ node_modules/
 *.sln
 *.sw?
 
-# Cursor
+# Cursor (contains API keys)
 .cursor/
+.cursor/*
 
 # OS specific
 .DS_Store
+Thumbs.db
 
 # Task files
 tasks.json
@@ -49,14 +67,17 @@ venv-py313/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+*.ipynb_checkpoints
 
-# Generated artifacts
+# Generated artifacts and outputs
 outputs/
 test_reports/
 tests/logs/
 tests/reports/
 tests/test_reports/
 test_models/
+bandit-report.json
+debug_output.txt
 
 # Compiled files
 *.so
@@ -68,3 +89,43 @@ test_models/
 *.dll
 *.zip
 *.exe
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Trading and financial data
+*.csv
+data/*.csv
+historical_data/
+market_data/
+
+# Model files (can be large)
+*.pkl
+*.joblib
+*.h5
+*.onnx
+models/*.pkl
+models/*.h5
+trained_models/
+
+# Configuration with sensitive data
+config/live_config.yaml
+config/*live*
+config/*prod*
+config/*production*
+*live*.yaml
+*prod*.yaml
+*production*.yaml
