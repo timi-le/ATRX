@@ -3,24 +3,24 @@
 
 # Trading Configuration - Production
 trading:
-  environment: "live"  # Live trading in production
-  risk_per_trade: 0.01  # More conservative 1% risk in production
-  max_positions: 5  # Fewer positions in production
-  
+  environment: "live" # Live trading in production
+  risk_per_trade: 0.01 # More conservative 1% risk in production
+  max_positions: 5 # Fewer positions in production
+
   broker:
-    api_url: "https://api-fxtrade.oanda.com"  # Live trading environment
-    
+    api_url: "https://api-fxtrade.oanda.com" # Live trading environment
+
   # Tighter rate limits for production
   economic_data:
-    rate_limit: 1000  # Lower rate limit for production
+    rate_limit: 1000 # Lower rate limit for production
 
 # Database Configuration - Production
 database:
-  host: "secret://database/prod_host"  # Production database host
+  host: "secret://database/prod_host" # Production database host
   port: 5432
   ssl_mode: "require"
-  connection_timeout: 10  # Shorter timeout in production
-  pool_size: 20  # Larger pool for production load
+  connection_timeout: 10 # Shorter timeout in production
+  pool_size: 20 # Larger pool for production load
 
 # Message Bus Configuration - Production
 message_bus:
@@ -32,44 +32,44 @@ message_bus:
 # Redis Configuration - Production
 redis:
   host: "secret://database/redis_prod_host"
-  ssl: true  # Enable SSL in production
-  socket_timeout: 2  # Shorter timeout
+  ssl: true # Enable SSL in production
+  socket_timeout: 2 # Shorter timeout
 
 # API Server Configuration - Production
 api:
   host: "0.0.0.0"
-  port: 443  # HTTPS port
-  rate_limit: 500  # More restrictive in production
+  port: 443 # HTTPS port
+  rate_limit: 500 # More restrictive in production
 
 # Monitoring Configuration - Production
 monitoring:
   prometheus:
     port: 9000
-  
+
   # Production logging
   logging:
-    level: "WARNING"  # Less verbose logging in production
+    level: "WARNING" # Less verbose logging in production
     file: "/var/log/fx-trading/trading_system.log"
-    max_size_mb: 500  # Larger log files in production
+    max_size_mb: 500 # Larger log files in production
     backup_count: 20
 
 # Security Configuration - Production
 security:
   # Stricter encryption in production
   encryption:
-    key_rotation_days: 7  # More frequent key rotation
-    
+    key_rotation_days: 7 # More frequent key rotation
+
   # Stricter TLS settings
   tls:
-    min_version: "1.3"  # Require TLS 1.3 in production
-    
+    min_version: "1.3" # Require TLS 1.3 in production
+
   # Stricter access control
   rbac:
-    session_timeout_minutes: 15  # Shorter sessions in production
-    
+    session_timeout_minutes: 15 # Shorter sessions in production
+
   # Enhanced audit settings
   audit:
-    retention_days: 365  # Longer retention in production
+    retention_days: 365 # Longer retention in production
     max_file_size_mb: 100
 
 # AI/ML Configuration - Production
@@ -79,19 +79,19 @@ ai:
     momentum: "/opt/fx-trading/models/momentum_model_v2.pkl"
     mean_reversion: "/opt/fx-trading/models/mean_reversion_model_v2.pkl"
     breakout: "/opt/fx-trading/models/breakout_model_v2.pkl"
-    
+
   # Enable all features in production
   features:
-    sentiment_analysis: true  # Enable in production
-    
+    sentiment_analysis: true # Enable in production
+
   # Production inference settings
   inference:
-    batch_size: 500  # Larger batches in production
-    timeout_seconds: 2  # Shorter timeout
+    batch_size: 500 # Larger batches in production
+    timeout_seconds: 2 # Shorter timeout
 
 # Development/Testing Configuration - Disabled in Production
 development:
   debug: false
   hot_reload: false
   mock_broker: false
-  sample_data: false 
+  sample_data: false

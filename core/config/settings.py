@@ -2,9 +2,9 @@
 Configuration settings for the FX AI-Quant Trading System.
 """
 
-from pydantic import BaseModel, Field
-from typing import Dict, List, Optional
 from pathlib import Path
+
+from pydantic import BaseModel, Field
 
 
 class DataConfig(BaseModel):
@@ -13,8 +13,8 @@ class DataConfig(BaseModel):
     # Data providers
     dukascopy_enabled: bool = True
     oanda_enabled: bool = True
-    oanda_api_key: Optional[str] = None
-    oanda_account_id: Optional[str] = None
+    oanda_api_key: str | None = None
+    oanda_account_id: str | None = None
     oanda_environment: str = "practice"  # practice or live
 
     # Data paths
@@ -23,7 +23,7 @@ class DataConfig(BaseModel):
     historical_data_path: Path = Path("data/historical")
 
     # Symbols to trade
-    fx_pairs: List[str] = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "USDCAD"]
+    fx_pairs: list[str] = ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "USDCAD"]
 
     # Data retention
     tick_data_retention_days: int = 30
@@ -89,7 +89,7 @@ class MessagingConfig(BaseModel):
     redis_host: str = "localhost"
     redis_port: int = 6379
     redis_db: int = 0
-    redis_password: Optional[str] = None
+    redis_password: str | None = None
 
     # Message queue settings
     max_queue_size: int = 10000
@@ -113,11 +113,11 @@ class MLConfig(BaseModel):
     # Model parameters
     lstm_units: int = 50
     cnn_filters: int = 32
-    ensemble_models: List[str] = ["lstm", "cnn", "xgboost"]
+    ensemble_models: list[str] = ["lstm", "cnn", "xgboost"]
 
     # Regime detection
     n_regimes: int = 3
-    regime_features: List[str] = ["volatility", "momentum", "macro_surprise"]
+    regime_features: list[str] = ["volatility", "momentum", "macro_surprise"]
 
 
 class MonitoringConfig(BaseModel):
@@ -140,9 +140,9 @@ class MonitoringConfig(BaseModel):
 
     # Alerts
     alert_email_enabled: bool = False
-    alert_email_recipients: List[str] = []
+    alert_email_recipients: list[str] = []
     alert_slack_enabled: bool = False
-    alert_slack_webhook: Optional[str] = None
+    alert_slack_webhook: str | None = None
 
 
 class SystemConfig(BaseModel):

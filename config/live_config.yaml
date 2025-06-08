@@ -27,8 +27,8 @@ technical_indicators:
   bollinger_std: 2.0
 
 metadata:
-  created: '2025-06-06T19:58:00.000000'
+  created: "2025-06-06T19:58:00.000000"
   version: 1.0.0
   description: Parameter configuration for FX AI-Quant system
-  last_modified: '2025-06-06T19:58:00.000000'
+  last_modified: "2025-06-06T19:58:00.000000"
   changes_count: 0

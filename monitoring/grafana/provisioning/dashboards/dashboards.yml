@@ -1,12 +1,12 @@
 apiVersion: 1
 
 providers:
-  - name: 'FX Trading Dashboards'
+  - name: "FX Trading Dashboards"
     orgId: 1
-    folder: 'FX AI Trading'
+    folder: "FX AI Trading"
     type: file
     disableDeletion: false
     updateIntervalSeconds: 10
     allowUiUpdates: true
     options:
-      path: /var/lib/grafana/dashboards 
+      path: /var/lib/grafana/dashboards

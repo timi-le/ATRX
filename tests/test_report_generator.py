@@ -15,25 +15,26 @@ Features:
 """
 
 import json
-import os
-import sys
-import time
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List, Any, Optional
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from dataclasses import dataclass, asdict
 import logging
+import sys
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
 
 # Add parent directory to path
 sys.path.append(str(Path(__file__).parent.parent))
 
+
 @dataclass
 class TestMetrics:
     """Container for test metrics"""
+
     test_name: str
     duration_seconds: float
     success: bool
@@ -44,9 +45,11 @@ class TestMetrics:
     memory_usage_mb: float = 0.0
     cpu_usage_percent: float = 0.0
 
+
 @dataclass
 class SystemPerformance:
     """Container for system performance metrics"""
+
     total_tests: int
     passed_tests: int
     failed_tests: int
@@ -57,96 +60,107 @@ class SystemPerformance:
     max_latency: float
     total_errors: int
 
+
 class TestReportGenerator:
     """Generates comprehensive test reports"""
-    
+
     def __init__(self, output_dir: str = "reports"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
         self.logger = logging.getLogger(__name__)
-        
+
         # Set up matplotlib for report generation
         try:
-            plt.style.use('seaborn')
+            plt.style.use("seaborn")
         except OSError:
             # Fallback to default style if seaborn is not available
-            plt.style.use('default')
+            plt.style.use("default")
         sns.set_palette("husl")
-    
-    def load_test_results(self) -> Dict[str, Any]:
+
+    def load_test_results(self) -> dict[str, Any]:
         """Load all test results from various test files"""
         results = {}
-        
+
         # Load integration test results
-        integration_file = Path('logs/integration_test_results.json')
+        integration_file = Path("logs/integration_test_results.json")
         if integration_file.exists():
-            with open(integration_file, 'r') as f:
-                results['integration'] = json.load(f)
-        
+            with open(integration_file) as f:
+                results["integration"] = json.load(f)
+
         # Load stress test results
-        stress_file = Path('logs/stress_test_results.json')
+        stress_file = Path("logs/stress_test_results.json")
         if stress_file.exists():
-            with open(stress_file, 'r') as f:
-                results['stress'] = json.load(f)
-        
+            with open(stress_file) as f:
+                results["stress"] = json.load(f)
+
         # Load performance test results
-        performance_file = Path('logs/performance_test_results.json')
+        performance_file = Path("logs/performance_test_results.json")
         if performance_file.exists():
-            with open(performance_file, 'r') as f:
-                results['performance'] = json.load(f)
-        
+            with open(performance_file) as f:
+                results["performance"] = json.load(f)
+
         return results
-    
-    def extract_metrics(self, test_results: Dict[str, Any]) -> List[TestMetrics]:
+
+    def extract_metrics(self, test_results: dict[str, Any]) -> list[TestMetrics]:
         """Extract standardized metrics from test results"""
         metrics = []
-        
+
         for test_type, results in test_results.items():
-            if test_type == 'integration':
+            if test_type == "integration":
                 # Extract integration test metrics
-                for scenario_name, scenario_data in results.get('scenarios', {}).items():
+                for scenario_name, scenario_data in results.get(
+                    "scenarios", {}
+                ).items():
                     metric = TestMetrics(
                         test_name=f"integration_{scenario_name}",
-                        duration_seconds=scenario_data.get('duration_seconds', 0),
-                        success=scenario_data.get('success', False),
-                        throughput_tps=scenario_data.get('throughput_tps', 0),
-                        avg_latency_ms=scenario_data.get('avg_latency_ms', 0),
-                        max_latency_ms=scenario_data.get('max_latency_ms', 0),
-                        error_count=scenario_data.get('error_count', 0)
+                        duration_seconds=scenario_data.get("duration_seconds", 0),
+                        success=scenario_data.get("success", False),
+                        throughput_tps=scenario_data.get("throughput_tps", 0),
+                        avg_latency_ms=scenario_data.get("avg_latency_ms", 0),
+                        max_latency_ms=scenario_data.get("max_latency_ms", 0),
+                        error_count=scenario_data.get("error_count", 0),
                     )
                     metrics.append(metric)
-            
-            elif test_type == 'stress':
+
+            elif test_type == "stress":
                 # Extract stress test metrics
-                for test_name, test_data in results.get('individual_results', {}).items():
+                for test_name, test_data in results.get(
+                    "individual_results", {}
+                ).items():
                     metric = TestMetrics(
                         test_name=f"stress_{test_name}",
-                        duration_seconds=test_data.get('duration_seconds', 0),
-                        success=test_data.get('success', False),
-                        throughput_tps=test_data.get('throughput_tps', 0),
-                        avg_latency_ms=test_data.get('avg_latency_ms', 0),
-                        max_latency_ms=test_data.get('max_latency_ms', 0)
+                        duration_seconds=test_data.get("duration_seconds", 0),
+                        success=test_data.get("success", False),
+                        throughput_tps=test_data.get("throughput_tps", 0),
+                        avg_latency_ms=test_data.get("avg_latency_ms", 0),
+                        max_latency_ms=test_data.get("max_latency_ms", 0),
                     )
                     metrics.append(metric)
-        
+
         return metrics
-    
-    def calculate_system_performance(self, metrics: List[TestMetrics]) -> SystemPerformance:
+
+    def calculate_system_performance(
+        self, metrics: list[TestMetrics]
+    ) -> SystemPerformance:
         """Calculate overall system performance metrics"""
         if not metrics:
             return SystemPerformance(0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0)
-        
+
         total_tests = len(metrics)
         passed_tests = sum(1 for m in metrics if m.success)
         failed_tests = total_tests - passed_tests
         success_rate = passed_tests / total_tests if total_tests > 0 else 0
-        
+
         total_duration = sum(m.duration_seconds for m in metrics)
-        avg_throughput = np.mean([m.throughput_tps for m in metrics if m.throughput_tps > 0])
-        avg_latency = np.mean([m.avg_latency_ms for m in metrics if m.avg_latency_ms > 0])
+        avg_throughput = np.mean(
+            [m.throughput_tps for m in metrics if m.throughput_tps > 0]
+        )
+        avg_latency = np.mean(
+            [m.avg_latency_ms for m in metrics if m.avg_latency_ms > 0]
+        )
         max_latency = max([m.max_latency_ms for m in metrics], default=0)
         total_errors = sum(m.error_count for m in metrics)
-        
+
         return SystemPerformance(
             total_tests=total_tests,
             passed_tests=passed_tests,
@@ -156,138 +170,163 @@ class TestReportGenerator:
             avg_throughput=avg_throughput if not np.isnan(avg_throughput) else 0,
             avg_latency=avg_latency if not np.isnan(avg_latency) else 0,
             max_latency=max_latency,
-            total_errors=total_errors
+            total_errors=total_errors,
         )
-    
-    def generate_performance_charts(self, metrics: List[TestMetrics]) -> List[str]:
+
+    def generate_performance_charts(self, metrics: list[TestMetrics]) -> list[str]:
         """Generate performance visualization charts"""
         chart_files = []
-        
+
         if not metrics:
             return chart_files
-        
+
         # Create DataFrame for easier plotting
         df = pd.DataFrame([asdict(m) for m in metrics])
-        
+
         # 1. Test Success Rate Chart
         fig, ax = plt.subplots(figsize=(10, 6))
-        success_counts = df['success'].value_counts()
-        
+        success_counts = df["success"].value_counts()
+
         # Handle case where all tests passed or all failed
         if len(success_counts) == 1:
             if success_counts.index[0]:  # All tests passed
-                labels = ['Passed']
-                colors = ['#51cf66']
+                labels = ["Passed"]
+                colors = ["#51cf66"]
             else:  # All tests failed
-                labels = ['Failed']
-                colors = ['#ff6b6b']
+                labels = ["Failed"]
+                colors = ["#ff6b6b"]
             values = [100]  # 100% of whichever category
         else:
             # Both passed and failed tests exist
             # Reorder to have Failed first, then Passed for consistent coloring
             if True in success_counts.index and False in success_counts.index:
-                labels = ['Failed', 'Passed']
+                labels = ["Failed", "Passed"]
                 values = [success_counts[False], success_counts[True]]
-                colors = ['#ff6b6b', '#51cf66']
+                colors = ["#ff6b6b", "#51cf66"]
             else:
-                labels = ['Passed' if success_counts.index[0] else 'Failed']
+                labels = ["Passed" if success_counts.index[0] else "Failed"]
                 values = success_counts.values
-                colors = ['#51cf66' if success_counts.index[0] else '#ff6b6b']
-        
-        ax.pie(values, labels=labels, autopct='%1.1f%%', 
-               colors=colors, startangle=90)
-        ax.set_title('Test Success Rate Distribution', fontsize=14, fontweight='bold')
-        
-        chart_file = self.output_dir / 'test_success_rate.png'
-        plt.savefig(chart_file, dpi=300, bbox_inches='tight')
+                colors = ["#51cf66" if success_counts.index[0] else "#ff6b6b"]
+
+        ax.pie(values, labels=labels, autopct="%1.1f%%", colors=colors, startangle=90)
+        ax.set_title("Test Success Rate Distribution", fontsize=14, fontweight="bold")
+
+        chart_file = self.output_dir / "test_success_rate.png"
+        plt.savefig(chart_file, dpi=300, bbox_inches="tight")
         plt.close()
         chart_files.append(str(chart_file))
-        
+
         # 2. Latency Distribution Chart
-        if df['avg_latency_ms'].sum() > 0:
+        if df["avg_latency_ms"].sum() > 0:
             fig, ax = plt.subplots(figsize=(12, 6))
-            
+
             # Filter out zero latencies for better visualization
-            latency_data = df[df['avg_latency_ms'] > 0]
-            
+            latency_data = df[df["avg_latency_ms"] > 0]
+
             if not latency_data.empty:
-                ax.bar(range(len(latency_data)), latency_data['avg_latency_ms'], 
-                       color='skyblue', alpha=0.7)
-                ax.set_xlabel('Test Index')
-                ax.set_ylabel('Average Latency (ms)')
-                ax.set_title('Average Latency by Test', fontsize=14, fontweight='bold')
+                ax.bar(
+                    range(len(latency_data)),
+                    latency_data["avg_latency_ms"],
+                    color="skyblue",
+                    alpha=0.7,
+                )
+                ax.set_xlabel("Test Index")
+                ax.set_ylabel("Average Latency (ms)")
+                ax.set_title("Average Latency by Test", fontsize=14, fontweight="bold")
                 ax.grid(True, alpha=0.3)
-                
+
                 # Add horizontal line for target latency (100ms)
-                ax.axhline(y=100, color='red', linestyle='--', alpha=0.7, 
-                          label='Target (100ms)')
+                ax.axhline(
+                    y=100,
+                    color="red",
+                    linestyle="--",
+                    alpha=0.7,
+                    label="Target (100ms)",
+                )
                 ax.legend()
-            
-            chart_file = self.output_dir / 'latency_distribution.png'
-            plt.savefig(chart_file, dpi=300, bbox_inches='tight')
+
+            chart_file = self.output_dir / "latency_distribution.png"
+            plt.savefig(chart_file, dpi=300, bbox_inches="tight")
             plt.close()
             chart_files.append(str(chart_file))
-        
+
         # 3. Throughput Performance Chart
-        if df['throughput_tps'].sum() > 0:
+        if df["throughput_tps"].sum() > 0:
             fig, ax = plt.subplots(figsize=(12, 6))
-            
-            throughput_data = df[df['throughput_tps'] > 0]
-            
+
+            throughput_data = df[df["throughput_tps"] > 0]
+
             if not throughput_data.empty:
-                ax.bar(range(len(throughput_data)), throughput_data['throughput_tps'], 
-                       color='lightgreen', alpha=0.7)
-                ax.set_xlabel('Test Index')
-                ax.set_ylabel('Throughput (TPS)')
-                ax.set_title('Throughput Performance by Test', fontsize=14, fontweight='bold')
+                ax.bar(
+                    range(len(throughput_data)),
+                    throughput_data["throughput_tps"],
+                    color="lightgreen",
+                    alpha=0.7,
+                )
+                ax.set_xlabel("Test Index")
+                ax.set_ylabel("Throughput (TPS)")
+                ax.set_title(
+                    "Throughput Performance by Test", fontsize=14, fontweight="bold"
+                )
                 ax.grid(True, alpha=0.3)
-                
+
                 # Add horizontal line for target throughput (1000 TPS)
-                ax.axhline(y=1000, color='red', linestyle='--', alpha=0.7, 
-                          label='Target (1000 TPS)')
+                ax.axhline(
+                    y=1000,
+                    color="red",
+                    linestyle="--",
+                    alpha=0.7,
+                    label="Target (1000 TPS)",
+                )
                 ax.legend()
-            
-            chart_file = self.output_dir / 'throughput_performance.png'
-            plt.savefig(chart_file, dpi=300, bbox_inches='tight')
+
+            chart_file = self.output_dir / "throughput_performance.png"
+            plt.savefig(chart_file, dpi=300, bbox_inches="tight")
             plt.close()
             chart_files.append(str(chart_file))
-        
+
         # 4. Test Duration Comparison
         fig, ax = plt.subplots(figsize=(12, 8))
-        
-        test_names = [m.test_name.replace('_', ' ').title() for m in metrics]
+
+        test_names = [m.test_name.replace("_", " ").title() for m in metrics]
         durations = [m.duration_seconds for m in metrics]
-        colors = ['green' if m.success else 'red' for m in metrics]
-        
+        colors = ["green" if m.success else "red" for m in metrics]
+
         bars = ax.barh(range(len(test_names)), durations, color=colors, alpha=0.7)
         ax.set_yticks(range(len(test_names)))
         ax.set_yticklabels(test_names)
-        ax.set_xlabel('Duration (seconds)')
-        ax.set_title('Test Duration by Test Type', fontsize=14, fontweight='bold')
+        ax.set_xlabel("Duration (seconds)")
+        ax.set_title("Test Duration by Test Type", fontsize=14, fontweight="bold")
         ax.grid(True, alpha=0.3)
-        
+
         # Add legend
         from matplotlib.patches import Patch
-        legend_elements = [Patch(facecolor='green', alpha=0.7, label='Passed'),
-                          Patch(facecolor='red', alpha=0.7, label='Failed')]
+
+        legend_elements = [
+            Patch(facecolor="green", alpha=0.7, label="Passed"),
+            Patch(facecolor="red", alpha=0.7, label="Failed"),
+        ]
         ax.legend(handles=legend_elements)
-        
-        chart_file = self.output_dir / 'test_duration_comparison.png'
-        plt.savefig(chart_file, dpi=300, bbox_inches='tight')
+
+        chart_file = self.output_dir / "test_duration_comparison.png"
+        plt.savefig(chart_file, dpi=300, bbox_inches="tight")
         plt.close()
         chart_files.append(str(chart_file))
-        
+
         return chart_files
-    
-    def generate_html_report(self, test_results: Dict[str, Any], 
-                           metrics: List[TestMetrics], 
-                           performance: SystemPerformance,
-                           chart_files: List[str]) -> str:
+
+    def generate_html_report(
+        self,
+        test_results: dict[str, Any],
+        metrics: list[TestMetrics],
+        performance: SystemPerformance,
+        chart_files: list[str],
+    ) -> str:
         """Generate comprehensive HTML report"""
-        
+
         # Generate timestamp
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+
         html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -452,7 +491,7 @@ class TestReportGenerator:
             <p>End-to-End Integration Test Report</p>
             <p>Generated on {timestamp}</p>
         </div>
-        
+
         <div class="section">
             <h2>Executive Summary</h2>
             <div class="summary">
@@ -482,34 +521,34 @@ class TestReportGenerator:
                 </div>
             </div>
         </div>
-        
+
         <div class="section">
             <h2>Performance Visualizations</h2>
         """
-        
+
         # Add charts
         for chart_file in chart_files:
-            chart_name = Path(chart_file).stem.replace('_', ' ').title()
+            chart_name = Path(chart_file).stem.replace("_", " ").title()
             html_content += f"""
             <div class="chart-container">
                 <h3>{chart_name}</h3>
                 <img src="{Path(chart_file).name}" alt="{chart_name}">
             </div>
             """
-        
+
         html_content += """
         </div>
-        
+
         <div class="section">
             <h2>Detailed Test Results</h2>
             <div class="test-grid">
         """
-        
+
         # Add individual test results
         for metric in metrics:
             status_class = "passed" if metric.success else "failed"
             status_text = "PASSED" if metric.success else "FAILED"
-            
+
             html_content += f"""
                 <div class="test-card {status_class}">
                     <h4>{metric.test_name.replace('_', ' ').title()}</h4>
@@ -539,26 +578,26 @@ class TestReportGenerator:
                     </div>
                 </div>
             """
-        
+
         # Generate recommendations
         recommendations = self.generate_recommendations(performance, metrics)
-        
+
         html_content += f"""
             </div>
         </div>
-        
+
         <div class="recommendations">
             <h3>Recommendations & Next Steps</h3>
             <ul>
         """
-        
+
         for rec in recommendations:
             html_content += f"<li>{rec}</li>"
-        
+
         html_content += """
             </ul>
         </div>
-        
+
         <div class="footer">
             <p>This report was automatically generated by the FX AI-Quant Trading System Integration Test Suite.</p>
             <p>For technical details and raw data, please refer to the individual test log files.</p>
@@ -567,19 +606,23 @@ class TestReportGenerator:
 </body>
 </html>
         """
-        
+
         # Save HTML report
-        report_file = self.output_dir / f'integration_test_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.html'
-        with open(report_file, 'w', encoding='utf-8') as f:
+        report_file = (
+            self.output_dir
+            / f'integration_test_report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.html'
+        )
+        with open(report_file, "w", encoding="utf-8") as f:
             f.write(html_content)
-        
+
         return str(report_file)
-    
-    def generate_recommendations(self, performance: SystemPerformance, 
-                               metrics: List[TestMetrics]) -> List[str]:
+
+    def generate_recommendations(
+        self, performance: SystemPerformance, metrics: list[TestMetrics]
+    ) -> list[str]:
         """Generate actionable recommendations based on test results"""
         recommendations = []
-        
+
         # Success rate recommendations
         if performance.success_rate < 0.8:
             recommendations.append(
@@ -596,7 +639,7 @@ class TestReportGenerator:
                 f"Excellent success rate of {performance.success_rate:.1%}. "
                 "System demonstrates high reliability."
             )
-        
+
         # Latency recommendations
         if performance.avg_latency > 100:
             recommendations.append(
@@ -608,23 +651,23 @@ class TestReportGenerator:
                 f"Average latency of {performance.avg_latency:.1f}ms is acceptable but could be improved. "
                 "Monitor for performance degradation under higher loads."
             )
-        
+
         # Throughput recommendations
         if performance.avg_throughput < 1000:
             recommendations.append(
                 f"Average throughput of {performance.avg_throughput:.0f} TPS is below the 1000 TPS target. "
                 "Consider implementing parallel processing and optimizing bottlenecks."
             )
-        
+
         # Error recommendations
         if performance.total_errors > 0:
             recommendations.append(
                 f"System generated {performance.total_errors} errors during testing. "
                 "Review error logs and implement additional error handling."
             )
-        
+
         # Stress test specific recommendations
-        stress_tests = [m for m in metrics if m.test_name.startswith('stress_')]
+        stress_tests = [m for m in metrics if m.test_name.startswith("stress_")]
         if stress_tests:
             failed_stress = [m for m in stress_tests if not m.success]
             if failed_stress:
@@ -633,99 +676,109 @@ class TestReportGenerator:
                     "System may not handle extreme market conditions well. "
                     "Implement additional circuit breakers and failsafe mechanisms."
                 )
-        
+
         # General recommendations
-        recommendations.extend([
-            "Implement continuous monitoring of key performance metrics in production.",
-            "Set up automated alerts for latency spikes and throughput degradation.",
-            "Consider implementing adaptive load balancing for high-frequency scenarios.",
-            "Regular performance regression testing should be conducted before releases."
-        ])
-        
+        recommendations.extend(
+            [
+                "Implement continuous monitoring of key performance metrics in production.",
+                "Set up automated alerts for latency spikes and throughput degradation.",
+                "Consider implementing adaptive load balancing for high-frequency scenarios.",
+                "Regular performance regression testing should be conducted before releases.",
+            ]
+        )
+
         return recommendations
-    
-    def generate_summary_json(self, test_results: Dict[str, Any], 
-                            performance: SystemPerformance) -> str:
+
+    def generate_summary_json(
+        self, test_results: dict[str, Any], performance: SystemPerformance
+    ) -> str:
         """Generate machine-readable summary in JSON format"""
         summary = {
-            'report_metadata': {
-                'generated_at': datetime.now().isoformat(),
-                'system': 'FX AI-Quant Trading System',
-                'test_type': 'End-to-End Integration Testing'
+            "report_metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "system": "FX AI-Quant Trading System",
+                "test_type": "End-to-End Integration Testing",
             },
-            'performance_summary': asdict(performance),
-            'test_results': test_results,
-            'compliance': {
-                'latency_target_100ms': performance.avg_latency <= 100,
-                'throughput_target_1000tps': performance.avg_throughput >= 1000,
-                'success_rate_target_95pct': performance.success_rate >= 0.95,
-                'zero_errors': performance.total_errors == 0
-            }
+            "performance_summary": asdict(performance),
+            "test_results": test_results,
+            "compliance": {
+                "latency_target_100ms": performance.avg_latency <= 100,
+                "throughput_target_1000tps": performance.avg_throughput >= 1000,
+                "success_rate_target_95pct": performance.success_rate >= 0.95,
+                "zero_errors": performance.total_errors == 0,
+            },
         }
-        
-        summary_file = self.output_dir / f'test_summary_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
-        with open(summary_file, 'w') as f:
+
+        summary_file = (
+            self.output_dir
+            / f'test_summary_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json'
+        )
+        with open(summary_file, "w") as f:
             json.dump(summary, f, indent=2, default=str)
-        
+
         return str(summary_file)
-    
-    def generate_complete_report(self) -> Dict[str, str]:
+
+    def generate_complete_report(self) -> dict[str, str]:
         """Generate complete test report with all components"""
         self.logger.info("Generating comprehensive test report...")
-        
+
         # Load all test results
         test_results = self.load_test_results()
-        
+
         if not test_results:
             self.logger.warning("No test results found. Run integration tests first.")
             return {}
-        
+
         # Extract metrics
         metrics = self.extract_metrics(test_results)
-        
+
         # Calculate performance
         performance = self.calculate_system_performance(metrics)
-        
+
         # Generate charts
         chart_files = self.generate_performance_charts(metrics)
-        
+
         # Generate reports
-        html_report = self.generate_html_report(test_results, metrics, performance, chart_files)
+        html_report = self.generate_html_report(
+            test_results, metrics, performance, chart_files
+        )
         json_summary = self.generate_summary_json(test_results, performance)
-        
+
         report_files = {
-            'html_report': html_report,
-            'json_summary': json_summary,
-            'charts': chart_files
+            "html_report": html_report,
+            "json_summary": json_summary,
+            "charts": chart_files,
         }
-        
+
         self.logger.info(f"Test report generated successfully:")
         self.logger.info(f"  HTML Report: {html_report}")
         self.logger.info(f"  JSON Summary: {json_summary}")
         self.logger.info(f"  Charts: {len(chart_files)} files")
-        
+
         return report_files
+
 
 def main():
     """Main entry point for report generation"""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-    
+
     generator = TestReportGenerator()
     report_files = generator.generate_complete_report()
-    
+
     if report_files:
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("FX AI-QUANT TRADING SYSTEM - TEST REPORT GENERATED")
-        print("="*60)
+        print("=" * 60)
         print(f"HTML Report: {report_files.get('html_report', 'N/A')}")
         print(f"JSON Summary: {report_files.get('json_summary', 'N/A')}")
         print(f"Charts Generated: {len(report_files.get('charts', []))}")
-        print("="*60)
+        print("=" * 60)
     else:
         print("No test results found. Please run integration tests first.")
 
-if __name__ == '__main__':
-    main() 
+
+if __name__ == "__main__":
+    main()

@@ -130,7 +130,7 @@ groups:
         expr: |
           (
             abs(
-              fxai_regime_ratio{regime="trending"} - 
+              fxai_regime_ratio{regime="trending"} -
               fxai_regime_ratio{regime="trending"} offset 1h
             ) > 0.3
           )
@@ -204,4 +204,4 @@ groups:
           component: "{{ $labels.component }}"
         annotations:
           summary: "Warning: Exception rate spike"
-          description: "Exception rate is {{ $value }}/second for {{ $labels.exception_type }} in {{ $labels.component }}" 
+          description: "Exception rate is {{ $value }}/second for {{ $labels.exception_type }} in {{ $labels.component }}"

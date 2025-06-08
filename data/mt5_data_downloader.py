@@ -5,21 +5,30 @@ MT5 Data Downloader
 This module provides functionality to connect to the MetaTrader 5 terminal
 and download historical price data for various financial instruments.
 """
-import MetaTrader5 as mt5
-import pandas as pd
-from datetime import datetime
 import logging
 import os
-from typing import Optional
+from datetime import datetime
+
+import MetaTrader5 as mt5
+import pandas as pd
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 class MT5DataDownloader:
     """
     A class to handle the connection and data downloading from MetaTrader 5.
     """
-    def __init__(self, login: Optional[int] = None, password: Optional[str] = None, server: Optional[str] = None):
+
+    def __init__(
+        self,
+        login: int | None = None,
+        password: str | None = None,
+        server: str | None = None,
+    ):
         """
         Initializes the connection to the MetaTrader 5 terminal.
 
@@ -30,20 +39,22 @@ class MT5DataDownloader:
         """
         initialize_params = {}
         if login:
-            initialize_params['login'] = int(login)
+            initialize_params["login"] = int(login)
         if password:
-            initialize_params['password'] = password
+            initialize_params["password"] = password
         if server:
-            initialize_params['server'] = server
+            initialize_params["server"] = server
 
         if not mt5.initialize(**initialize_params):
             logging.error("initialize() failed, error code =", mt5.last_error())
             raise ConnectionError("Failed to initialize MetaTrader 5 connection.")
-        
+
         logging.info("MetaTrader 5 connection initialized successfully.")
         terminal_info = mt5.terminal_info()
         if terminal_info:
-            logging.info(f"Connected to {terminal_info.name} on account {mt5.account_info().login}")
+            logging.info(
+                f"Connected to {terminal_info.name} on account {mt5.account_info().login}"
+            )
         logging.info(f"MetaTrader 5 version: {mt5.version()}")
 
     def disconnect(self):
@@ -67,11 +78,13 @@ class MT5DataDownloader:
         if info is None:
             logging.error(f"Symbol {symbol} not found.")
             return None
-        
+
         logging.info(f"Symbol {symbol} info: {info}")
         return info
 
-    def download_data(self, symbol: str, timeframe, start_date: datetime, end_date: datetime) -> pd.DataFrame:
+    def download_data(
+        self, symbol: str, timeframe, start_date: datetime, end_date: datetime
+    ) -> pd.DataFrame:
         """
         Downloads historical data for a given symbol and timeframe, handling large date ranges by chunking.
 
@@ -84,21 +97,29 @@ class MT5DataDownloader:
         Returns:
             pd.DataFrame: A pandas DataFrame containing the historical data, or an empty DataFrame if failed.
         """
-        logging.info(f"Attempting to download data for {symbol} from {start_date} to {end_date} with timeframe {self._timeframe_to_str(timeframe)}.")
-        
+        logging.info(
+            f"Attempting to download data for {symbol} from {start_date} to {end_date} with timeframe {self._timeframe_to_str(timeframe)}."
+        )
+
         all_dataframes = []
         current_start = start_date
-        
+
         while current_start < end_date:
             # Set the end of the chunk to one year later or the final end_date, whichever is smaller
-            chunk_end = min(current_start.replace(year=current_start.year + 1), end_date)
+            chunk_end = min(
+                current_start.replace(year=current_start.year + 1), end_date
+            )
             logging.info(f"  Downloading chunk from {current_start} to {chunk_end}")
 
             try:
-                rates = mt5.copy_rates_range(symbol, timeframe, current_start, chunk_end)
-                
+                rates = mt5.copy_rates_range(
+                    symbol, timeframe, current_start, chunk_end
+                )
+
                 if rates is None or len(rates) == 0:
-                    logging.warning(f"  No rates received for chunk. Error code: {mt5.last_error()}")
+                    logging.warning(
+                        f"  No rates received for chunk. Error code: {mt5.last_error()}"
+                    )
                 else:
                     # Convert the structured array directly to DataFrame
                     chunk_df = pd.DataFrame(rates)
@@ -106,27 +127,37 @@ class MT5DataDownloader:
                     logging.info(f"  Received {len(rates)} records for this chunk.")
 
             except Exception as e:
-                logging.error(f"  An error occurred during chunk download for {symbol}: {e}")
-            
+                logging.error(
+                    f"  An error occurred during chunk download for {symbol}: {e}"
+                )
+
             # Move to the next chunk
             current_start = chunk_end
 
         if not all_dataframes:
-            logging.error(f"Failed to download any data for {symbol} in the given range.")
+            logging.error(
+                f"Failed to download any data for {symbol} in the given range."
+            )
             return pd.DataFrame()
-            
+
         # Concatenate all chunk DataFrames
         df = pd.concat(all_dataframes, ignore_index=True)
 
         # Convert time in seconds into a datetime object
-        df['time'] = pd.to_datetime(df['time'], unit='s')
+        df["time"] = pd.to_datetime(df["time"], unit="s")
         # Remove duplicates that might occur at chunk boundaries
-        df = df.drop_duplicates(subset='time').sort_values('time').reset_index(drop=True)
-        
-        logging.info(f"Successfully downloaded a total of {len(df)} records for {symbol}.")
+        df = (
+            df.drop_duplicates(subset="time").sort_values("time").reset_index(drop=True)
+        )
+
+        logging.info(
+            f"Successfully downloaded a total of {len(df)} records for {symbol}."
+        )
         return df
 
-    def download_mtf_data(self, symbol: str, timeframes: list, start_date: datetime, end_date: datetime) -> dict[str, pd.DataFrame]:
+    def download_mtf_data(
+        self, symbol: str, timeframes: list, start_date: datetime, end_date: datetime
+    ) -> dict[str, pd.DataFrame]:
         """
         Downloads historical data for a given symbol across multiple timeframes.
 
@@ -149,7 +180,9 @@ class MT5DataDownloader:
             if not df.empty:
                 mtf_data[tf_str] = df
             else:
-                logging.warning(f"No data downloaded for {symbol} on {tf_str} timeframe.")
+                logging.warning(
+                    f"No data downloaded for {symbol} on {tf_str} timeframe."
+                )
         return mtf_data
 
     def _timeframe_to_str(self, timeframe: int) -> str:
@@ -167,7 +200,9 @@ class MT5DataDownloader:
         }
         return mapping.get(timeframe, f"TF_{timeframe}")
 
-    def save_to_file(self, df: pd.DataFrame, symbol: str, timeframe_str: str, path: str = 'data/raw'):
+    def save_to_file(
+        self, df: pd.DataFrame, symbol: str, timeframe_str: str, path: str = "data/raw"
+    ):
         """
         Saves the DataFrame to a file (Parquet format recommended).
 
@@ -194,19 +229,22 @@ class MT5DataDownloader:
         except Exception as e:
             logging.error(f"Failed to save data to {filepath}: {e}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Example usage:
     # It's recommended to use environment variables for credentials
     mt5_login = os.getenv("MT5_LOGIN")
     mt5_password = os.getenv("MT5_PASSWORD")
     mt5_server = os.getenv("MT5_SERVER")
-    
+
     # Ensure login is an int if it exists
     if mt5_login:
         mt5_login = int(mt5_login)
 
-    downloader = MT5DataDownloader(login=mt5_login, password=mt5_password, server=mt5_server)
-    
+    downloader = MT5DataDownloader(
+        login=mt5_login, password=mt5_password, server=mt5_server
+    )
+
     # Define parameters
     symbol_to_download = "EURUSD"
     timeframe_to_use = mt5.TIMEFRAME_M1
@@ -217,10 +255,12 @@ if __name__ == '__main__':
     if downloader.get_symbol_info(symbol_to_download):
         # Example of new MTF download
         mtf_timeframes = [mt5.TIMEFRAME_M5, mt5.TIMEFRAME_H1]
-        mtf_data_dict = downloader.download_mtf_data(symbol_to_download, mtf_timeframes, start_dt, end_dt)
+        mtf_data_dict = downloader.download_mtf_data(
+            symbol_to_download, mtf_timeframes, start_dt, end_dt
+        )
 
         for tf_str, data_df in mtf_data_dict.items():
-             if not data_df.empty:
+            if not data_df.empty:
                 downloader.save_to_file(data_df, symbol_to_download, tf_str)
 
     # Disconnect

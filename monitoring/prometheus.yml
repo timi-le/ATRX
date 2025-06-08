@@ -2,10 +2,10 @@
 # This configuration file tells Prometheus how to scrape metrics from our trading system
 
 global:
-  scrape_interval: 15s        # How often to scrape targets
-  evaluation_interval: 15s    # How often to evaluate rules
+  scrape_interval: 15s # How often to scrape targets
+  evaluation_interval: 15s # How often to evaluate rules
   external_labels:
-    monitor: 'fx-trading-monitor'
+    monitor: "fx-trading-monitor"
 
 # Rule files specifies a list of globs (currently empty)
 rule_files:
@@ -14,16 +14,16 @@ rule_files:
 # Scraping configuration
 scrape_configs:
   # FX Trading System metrics
-  - job_name: 'fx-ai-trading-system'
+  - job_name: "fx-ai-trading-system"
     static_configs:
-      - targets: ['host.docker.internal:9000']
-    
+      - targets: ["host.docker.internal:9000"]
+
     # How often to scrape this target
     scrape_interval: 5s
-    
+
     # Path to scrape metrics from
     metrics_path: /metrics
-    
+
     # Additional labels to add to all metrics from this job
     relabel_configs:
       - source_labels: [__address__]
@@ -32,17 +32,16 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: host.docker.internal:9000
-    
+
     # Optional: Authentication if needed
     # basic_auth:
     #   username: 'monitoring'
     #   password: 'secret'
 
   # Optional: Prometheus self-monitoring
-  - job_name: 'prometheus'
+  - job_name: "prometheus"
     static_configs:
-      - targets: ['localhost:9090']
-
+      - targets: ["localhost:9090"]
 # Optional: Alertmanager configuration
 # alerting:
 #   alertmanagers:
@@ -56,4 +55,4 @@ scrape_configs:
 
 # Optional: Remote read configuration
 # remote_read:
-#   - url: "http://localhost:8086/api/v1/prom/read?db=prometheus" 
+#   - url: "http://localhost:8086/api/v1/prom/read?db=prometheus"

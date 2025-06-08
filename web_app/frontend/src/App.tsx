@@ -56,7 +56,7 @@ function App() {
       console.log("Attempting to load parameters...");
       setLoading(true);
       setError(null);
-      
+
       console.log(`Fetching from: ${API_BASE}/config/parameters`);
       const response = await fetch(`${API_BASE}/config/parameters`);
       console.log("Fetch response received:", response);
@@ -65,7 +65,7 @@ function App() {
         console.error("Fetch response not OK:", response.status);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data: ApiResponse = await response.json();
       console.log("Parsed JSON data:", data);
 
@@ -182,7 +182,7 @@ function App() {
     if (!param) return;
 
     let processedValue: any = value;
-    
+
     if (param.type === 'int') {
       processedValue = parseInt(value);
     } else if (param.type === 'float') {
@@ -241,7 +241,7 @@ function App() {
             {paramName.replace(/_/g, ' ')}
           </h3>
           <div className="space-y-4">
-            <select 
+            <select
               value={current_value || ''}
               onChange={(e) => handleInputChange(paramName, e.target.value)}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -318,7 +318,7 @@ function App() {
   const filteredParameters = Object.entries(parameters).filter(([name, param]) => {
     // Only show commonly tuned parameters
     const displayParams = [
-      'grid_step_factor', 'risk_per_trade', 'session_filter_enabled', 
+      'grid_step_factor', 'risk_per_trade', 'session_filter_enabled',
       'tp_type', 'momentum_weight', 'rsi_period', 'max_levels',
       'volatility_filter_threshold', 'ma_fast_period', 'ma_slow_period'
     ];
@@ -336,13 +336,13 @@ function App() {
               <p className="mt-1 text-gray-600">Real-time configuration management for trading parameters</p>
             </div>
             <div className="flex space-x-3">
-              <button 
+              <button
                 onClick={resetConfiguration}
                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
               >
                 Reset Changes
               </button>
-              <button 
+              <button
                 onClick={saveConfiguration}
                 disabled={saving}
                 className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
@@ -410,7 +410,7 @@ function App() {
         {apiStatus === 'offline' ? (
           <div className="text-center py-12">
             <p className="text-lg text-gray-600 mb-4">Backend API is not available</p>
-            <button 
+            <button
               onClick={checkApiHealth}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
@@ -441,4 +441,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

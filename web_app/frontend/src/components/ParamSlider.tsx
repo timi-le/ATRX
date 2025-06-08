@@ -98,7 +98,7 @@ export const ParamSlider: React.FC<ParamSliderProps> = ({
             background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${percentage}%, #e5e7eb ${percentage}%, #e5e7eb 100%)`
           }}
         />
-        <div 
+        <div
           className="absolute top-0 h-2 bg-blue-500 rounded-lg pointer-events-none"
           style={{ width: `${percentage}%` }}
         />
@@ -141,4 +141,4 @@ export const ParamSlider: React.FC<ParamSliderProps> = ({
       `}</style>
     </div>
   );
-}; 
+};

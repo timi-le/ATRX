@@ -96,4 +96,4 @@ LOCKOUT_DURATION=900
 # TLS/SSL Configuration
 TLS_CERT_PATH=config/certs/localhost.crt
 TLS_KEY_PATH=config/certs/localhost.key
-TLS_MIN_VERSION=1.2 
+TLS_MIN_VERSION=1.2

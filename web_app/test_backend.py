@@ -6,12 +6,11 @@ This script demonstrates the backend API functionality and can be used
 to verify that the API is working correctly before connecting the frontend.
 """
 
+
 import requests
-import json
-import time
-from typing import Dict, Any
 
 API_BASE_URL = "http://localhost:8000"
+
 
 def test_health_check():
     """Test the health check endpoint."""
@@ -28,6 +27,7 @@ def test_health_check():
     except requests.exceptions.ConnectionError:
         print("❌ Cannot connect to backend. Is the server running?")
         return False
+
 
 def test_get_configuration():
     """Test getting the current configuration."""
@@ -46,6 +46,7 @@ def test_get_configuration():
         print(f"❌ Error getting configuration: {e}")
         return None
 
+
 def test_get_parameters():
     """Test getting all parameters with metadata."""
     print("\n🎛️ Testing parameter metadata retrieval...")
@@ -53,15 +54,17 @@ def test_get_parameters():
         response = requests.get(f"{API_BASE_URL}/config/parameters")
         if response.status_code == 200:
             data = response.json()
-            if data['success']:
-                params = data['data']
+            if data["success"]:
+                params = data["data"]
                 print(f"✅ Parameters loaded successfully: {len(params)} parameters")
-                
+
                 # Show some example parameters
                 print("   Example parameters:")
                 for i, (name, info) in enumerate(list(params.items())[:3]):
-                    print(f"   - {name}: {info.get('current_value')} ({info.get('type')})")
-                
+                    print(
+                        f"   - {name}: {info.get('current_value')} ({info.get('type')})"
+                    )
+
                 return params
             else:
                 print(f"❌ Failed to get parameters: {data['message']}")
@@ -73,21 +76,18 @@ def test_get_parameters():
         print(f"❌ Error getting parameters: {e}")
         return None
 
+
 def test_update_parameter():
     """Test updating a single parameter."""
     print("\n🔧 Testing parameter update...")
     try:
         # Test updating grid_step_factor
-        update_data = {
-            "key": "grid_step_factor",
-            "value": 0.75,
-            "validate": True
-        }
-        
+        update_data = {"key": "grid_step_factor", "value": 0.75, "validate": True}
+
         response = requests.post(f"{API_BASE_URL}/config/parameter", json=update_data)
         if response.status_code == 200:
             data = response.json()
-            if data['success']:
+            if data["success"]:
                 print(f"✅ Parameter updated successfully: {data['message']}")
                 return True
             else:
@@ -100,6 +100,7 @@ def test_update_parameter():
         print(f"❌ Error updating parameter: {e}")
         return False
 
+
 def test_bulk_update():
     """Test bulk parameter update."""
     print("\n📦 Testing bulk parameter update...")
@@ -109,17 +110,21 @@ def test_bulk_update():
             "parameters": {
                 "risk_per_trade": 0.025,
                 "max_levels": 6,
-                "session_filter_enabled": True
+                "session_filter_enabled": True,
             },
-            "validate": True
+            "validate": True,
         }
-        
-        response = requests.post(f"{API_BASE_URL}/config/parameters/bulk", json=update_data)
+
+        response = requests.post(
+            f"{API_BASE_URL}/config/parameters/bulk", json=update_data
+        )
         if response.status_code == 200:
             data = response.json()
-            if data['success']:
-                summary = data['data']['summary']
-                print(f"✅ Bulk update completed: {summary['successful']}/{summary['total_updates']} successful")
+            if data["success"]:
+                summary = data["data"]["summary"]
+                print(
+                    f"✅ Bulk update completed: {summary['successful']}/{summary['total_updates']} successful"
+                )
                 return True
             else:
                 print(f"❌ Bulk update failed: {data['message']}")
@@ -131,6 +136,7 @@ def test_bulk_update():
         print(f"❌ Error in bulk update: {e}")
         return False
 
+
 def test_save_configuration():
     """Test saving the configuration."""
     print("\n💾 Testing configuration save...")
@@ -138,7 +144,7 @@ def test_save_configuration():
         response = requests.post(f"{API_BASE_URL}/config/save?versioned=true")
         if response.status_code == 200:
             data = response.json()
-            if data['success']:
+            if data["success"]:
                 print(f"✅ Configuration saved successfully: {data['message']}")
                 return True
             else:
@@ -151,6 +157,7 @@ def test_save_configuration():
         print(f"❌ Error saving configuration: {e}")
         return False
 
+
 def test_get_versions():
     """Test getting configuration versions."""
     print("\n📚 Testing version history retrieval...")
@@ -158,8 +165,8 @@ def test_get_versions():
         response = requests.get(f"{API_BASE_URL}/config/versions")
         if response.status_code == 200:
             data = response.json()
-            if data['success']:
-                versions = data['data']['versions']
+            if data["success"]:
+                versions = data["data"]["versions"]
                 print(f"✅ Version history loaded: {len(versions)} versions available")
                 if versions:
                     latest = versions[0]
@@ -175,6 +182,7 @@ def test_get_versions():
         print(f"❌ Error getting versions: {e}")
         return None
 
+
 def test_validation():
     """Test configuration validation."""
     print("\n✅ Testing configuration validation...")
@@ -182,14 +190,14 @@ def test_validation():
         response = requests.get(f"{API_BASE_URL}/config/validate")
         if response.status_code == 200:
             data = response.json()
-            if data['success']:
-                validation_data = data['data']
-                if validation_data.get('valid', False):
+            if data["success"]:
+                validation_data = data["data"]
+                if validation_data.get("valid", False):
                     print("✅ Configuration is valid")
                 else:
                     print("⚠️ Configuration has validation issues")
-                    if 'errors' in validation_data:
-                        for error in validation_data['errors']:
+                    if "errors" in validation_data:
+                        for error in validation_data["errors"]:
                             print(f"   - {error}")
                 return validation_data
             else:
@@ -202,46 +210,48 @@ def test_validation():
         print(f"❌ Error in validation: {e}")
         return None
 
+
 def run_complete_test():
     """Run all tests in sequence."""
     print("🚀 Starting Backend API Test Suite")
     print("=" * 50)
-    
+
     tests_passed = 0
     total_tests = 7
-    
+
     # Run all tests
     if test_health_check():
         tests_passed += 1
-    
+
     if test_get_configuration():
         tests_passed += 1
-    
+
     if test_get_parameters():
         tests_passed += 1
-    
+
     if test_update_parameter():
         tests_passed += 1
-    
+
     if test_bulk_update():
         tests_passed += 1
-    
+
     if test_save_configuration():
         tests_passed += 1
-    
+
     if test_validation():
         tests_passed += 1
-    
+
     print("\n" + "=" * 50)
     print(f"🎯 Test Results: {tests_passed}/{total_tests} tests passed")
-    
+
     if tests_passed == total_tests:
         print("🎉 All tests passed! The backend is working correctly.")
         print("✨ You can now start the frontend and begin parameter tuning.")
     else:
         print("⚠️ Some tests failed. Please check the backend configuration.")
-    
+
     return tests_passed == total_tests
+
 
 if __name__ == "__main__":
     print("FX AI-Quant Parameter Tuner - Backend Test")
@@ -250,12 +260,12 @@ if __name__ == "__main__":
     print("This script tests the backend API functionality.")
     print("Make sure the backend server is running on http://localhost:8000")
     print()
-    
+
     input("Press Enter to start the tests...")
     print()
-    
+
     success = run_complete_test()
-    
+
     if success:
         print("\n🚀 Ready to launch the web application!")
         print("Next steps:")
@@ -265,4 +275,4 @@ if __name__ == "__main__":
         print("4. Run: npm install && npm start")
         print("5. Open: http://localhost:3000")
     else:
-        print("\n🔧 Backend needs attention before proceeding.") 
+        print("\n🔧 Backend needs attention before proceeding.")

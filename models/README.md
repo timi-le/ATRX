@@ -330,7 +330,7 @@ Testing LSTM Model
 ✅ LSTM model test completed successfully
 
 ==================================================
-Testing CNN Model  
+Testing CNN Model
 ==================================================
 ✅ CNN model test completed successfully
 
@@ -355,7 +355,7 @@ models/
 ├── __init__.py                 # Package exports and factory functions
 ├── predictor_interface.py      # Base classes and interfaces
 ├── lstm_model.py              # LSTM implementation
-├── cnn_model.py               # CNN implementation  
+├── cnn_model.py               # CNN implementation
 ├── ensemble_model.py          # XGBoost and Ensemble implementations
 └── README.md                  # This documentation
 
@@ -458,4 +458,4 @@ When extending the models:
 
 ## 📄 License
 
-Part of the FX AI-Quant Trading System - Task 9 Implementation 
+Part of the FX AI-Quant Trading System - Task 9 Implementation

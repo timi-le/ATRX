@@ -44,4 +44,4 @@ alerts:
   frequency_limits:
     warning: 60
     critical: 15
-    emergency: 1 
+    emergency: 1

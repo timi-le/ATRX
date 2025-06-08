@@ -24,7 +24,7 @@ The engine combines two key data sources:
 
 ### Feature Vector Generation
 - **Multi-currency features** for all major FX pairs
-- **Rolling statistics** (means, standard deviations) 
+- **Rolling statistics** (means, standard deviations)
 - **Event counts** and high-impact flags
 - **ML-ready feature dictionaries** with consistent naming
 
@@ -78,15 +78,15 @@ try:
     start_date = datetime.now(timezone.utc) - timedelta(days=7)
     end_date = datetime.now(timezone.utc)
     await engine.backfill_historical_data(start_date, end_date)
-    
+
     # Get latest macro features
     macro_vector = await engine.get_latest_macro_vector()
     features = macro_vector.to_dict()
-    
+
     # Use features in ML models
     for feature_name, value in features.items():
         print(f"{feature_name}: {value}")
-        
+
 finally:
     await engine.close()
 ```
@@ -362,4 +362,4 @@ else:
 
 The Macro Economic Feature Engine provides a robust foundation for incorporating fundamental analysis into quantitative trading strategies. Its modular design allows for easy extension and customization while maintaining high performance and reliability.
 
-For more examples and advanced usage, see the `examples/macro_engine_demo.py` script. 
+For more examples and advanced usage, see the `examples/macro_engine_demo.py` script.

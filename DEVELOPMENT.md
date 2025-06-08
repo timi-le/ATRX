@@ -241,9 +241,9 @@ import structlog
 logger = structlog.get_logger(__name__)
 
 # Structured logging
-logger.info("Order executed", 
-           symbol="EURUSD", 
-           quantity=100000, 
+logger.info("Order executed",
+           symbol="EURUSD",
+           quantity=100000,
            price=1.0851)
 ```
 
@@ -319,4 +319,4 @@ Required environment variables (see `env.template`):
 - [Pytest Documentation](https://docs.pytest.org/)
 - [Black Code Formatter](https://black.readthedocs.io/)
 - [Flake8 Linter](https://flake8.pycqa.org/)
-- [Pre-commit Hooks](https://pre-commit.com/) 
+- [Pre-commit Hooks](https://pre-commit.com/)

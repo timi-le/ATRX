@@ -4,21 +4,21 @@ Unit tests for core interfaces in the FX AI-Quant Trading System.
 These tests verify the behavior of our abstract base classes and data structures.
 """
 
-import pytest
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock
 
-from core.interfaces.data_interfaces import MarketData, OHLCV
+import pytest
+
+from core.interfaces.data_interfaces import OHLCV, MarketData
+from core.interfaces.messaging_interfaces import Message, Topics
 from core.interfaces.ml_interfaces import Features, Prediction, RegimeLabel
 from core.interfaces.trading_interfaces import (
     Order,
-    Position,
-    Signal,
-    OrderType,
     OrderSide,
     OrderStatus,
+    OrderType,
+    Position,
+    Signal,
 )
-from core.interfaces.messaging_interfaces import Message, Topics
 
 
 class TestMarketDataStructures:

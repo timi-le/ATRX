@@ -3,16 +3,16 @@
 
 # Global Strategy Switcher Settings
 strategy_switcher:
-  decision_timeout_ms: 100  # Maximum decision time in milliseconds
-  ensemble_mode: false      # Whether to blend multiple strategy signals
+  decision_timeout_ms: 100 # Maximum decision time in milliseconds
+  ensemble_mode: false # Whether to blend multiple strategy signals
   confidence_threshold: 0.6 # Minimum confidence to generate signals
-  
+
   # Regime-to-strategy mapping
   regime_mapping:
     trending: "breakout_trend"
-    mean_reverting: "grid_martingale" 
+    mean_reverting: "grid_martingale"
     choppy: "time_scalping"
-  
+
   # Ensemble weights (when ensemble_mode: true)
   ensemble_weights:
     breakout_trend: 0.4
@@ -22,29 +22,29 @@ strategy_switcher:
 # Grid Martingale Strategy (Mean-Reverting Regime)
 grid_martingale:
   # Entry Configuration
-  entry_mode: "bidirectional"  # "bidirectional", "long_only", "short_only"
-  
+  entry_mode: "bidirectional" # "bidirectional", "long_only", "short_only"
+
   # Grid Parameters
-  grid_spacing_atr_multiplier: 0.5    # Grid spacing = ATR(14) * 0.5
-  martingale_multiplier: 1.5          # Position size multiplier (1.3-1.7)
-  max_grid_levels: 5                  # Maximum number of grid levels
-  
+  grid_spacing_atr_multiplier: 0.5 # Grid spacing = ATR(14) * 0.5
+  martingale_multiplier: 1.5 # Position size multiplier (1.3-1.7)
+  max_grid_levels: 5 # Maximum number of grid levels
+
   # Take Profit Logic
-  tp_mode: "vwap"                     # "vwap", "bollinger_mid", "fixed_pips"
-  tp_atr_multiplier: 1.0              # TP distance = ATR * multiplier
-  
+  tp_mode: "vwap" # "vwap", "bollinger_mid", "fixed_pips"
+  tp_atr_multiplier: 1.0 # TP distance = ATR * multiplier
+
   # Risk Management
-  time_stop_minutes: 30               # Auto-close after X minutes
-  max_unrealized_loss_pct: 2.0        # Kill-switch threshold (% of account)
-  
+  time_stop_minutes: 30 # Auto-close after X minutes
+  max_unrealized_loss_pct: 2.0 # Kill-switch threshold (% of account)
+
   # Entry Confirmation
-  rsi_divergence_required: false      # Require RSI divergence for entry
+  rsi_divergence_required: false # Require RSI divergence for entry
   rsi_oversold: 30
   rsi_overbought: 70
-  
+
   # Dynamic Grid Adjustment
-  volatility_expansion_threshold: 1.5  # Expand grid when vol > threshold * avg_vol
-  grid_expansion_factor: 1.3          # Grid spacing multiplier during high vol
+  volatility_expansion_threshold: 1.5 # Expand grid when vol > threshold * avg_vol
+  grid_expansion_factor: 1.3 # Grid spacing multiplier during high vol
 
 # Breakout Trend Strategy (Trending Regime)
 breakout_trend:
@@ -53,78 +53,78 @@ breakout_trend:
     - "inside_bar"
     - "engulfing"
     - "break_retest"
-  
+
   # Breakout Configuration
-  breakout_buffer_atr: 1.5            # Entry buffer to avoid fakeouts
-  min_atr_threshold: 0.0001           # Minimum ATR for momentum confirmation
-  
+  breakout_buffer_atr: 1.5 # Entry buffer to avoid fakeouts
+  min_atr_threshold: 0.0001 # Minimum ATR for momentum confirmation
+
   # Stop Loss
-  sl_mode: "structural"               # "structural", "atr", "fixed"
-  sl_atr_multiplier: 2.0              # SL distance = ATR * multiplier
-  
+  sl_mode: "structural" # "structural", "atr", "fixed"
+  sl_atr_multiplier: 2.0 # SL distance = ATR * multiplier
+
   # Take Profit
-  tp_mode: "trailing"                 # "trailing", "fixed", "parabolic_sar"
-  trailing_stop_atr: 1.5              # Trailing stop distance
-  
+  tp_mode: "trailing" # "trailing", "fixed", "parabolic_sar"
+  trailing_stop_atr: 1.5 # Trailing stop distance
+
   # Trend Confirmation
-  adx_threshold: 25                   # Minimum ADX for trend confirmation
-  ma_period: 20                       # Moving average for trend direction
-  
+  adx_threshold: 25 # Minimum ADX for trend confirmation
+  ma_period: 20 # Moving average for trend direction
+
   # Retest Logic
-  retest_confirmation_required: true   # Wait for retest before entry
-  retest_timeout_bars: 5              # Maximum bars to wait for retest
+  retest_confirmation_required: true # Wait for retest before entry
+  retest_timeout_bars: 5 # Maximum bars to wait for retest
 
 # Time-Based Scalping Strategy (Choppy Regime)
 time_scalping:
   # Timeframe Configuration
-  macro_timeframe: "1H"               # Higher timeframe for bias
-  entry_timeframe: "5M"               # Entry timeframe
-  
+  macro_timeframe: "1H" # Higher timeframe for bias
+  entry_timeframe: "5M" # Entry timeframe
+
   # Session Filters
   active_sessions:
-    - "london"      # 08:00-17:00 GMT
-    - "tokyo"       # 00:00-09:00 GMT
-  
+    - "london" # 08:00-17:00 GMT
+    - "tokyo" # 00:00-09:00 GMT
+
   # Pattern Detection
   patterns:
     - "double_top"
     - "double_bottom"
     - "flag"
     - "pennant"
-  
+
   # Volatility Window
-  min_volatility_atr: 0.0001          # Minimum volatility for entry
-  max_volatility_atr: 0.0005          # Maximum volatility for entry
-  
+  min_volatility_atr: 0.0001 # Minimum volatility for entry
+  max_volatility_atr: 0.0005 # Maximum volatility for entry
+
   # Entry Confirmation
   rsi_period: 14
-  rsi_entry_threshold: 20             # Distance from 50 for entry signal
-  
+  rsi_entry_threshold: 20 # Distance from 50 for entry signal
+
   # Risk Management
-  time_kill_minutes: 15               # Exit if trade stalls
-  max_trades_per_session: 3           # Limit trades per session
-  
+  time_kill_minutes: 15 # Exit if trade stalls
+  max_trades_per_session: 3 # Limit trades per session
+
   # Multi-timeframe Alignment
-  require_htf_alignment: true         # Require higher timeframe alignment
-  htf_ma_period: 50                   # Higher timeframe MA period
+  require_htf_alignment: true # Require higher timeframe alignment
+  htf_ma_period: 50 # Higher timeframe MA period
 
 # Risk Management (Global)
 risk_management:
-  max_position_size_pct: 2.0          # Maximum position size (% of account)
-  max_daily_loss_pct: 5.0             # Maximum daily loss (% of account)
-  max_drawdown_pct: 10.0              # Maximum drawdown (% of account)
-  
+  max_position_size_pct: 2.0 # Maximum position size (% of account)
+  max_daily_loss_pct: 5.0 # Maximum daily loss (% of account)
+  max_drawdown_pct: 10.0 # Maximum drawdown (% of account)
+
   # Correlation Limits
-  max_correlation_exposure: 0.7       # Maximum correlation between positions
-  correlation_lookback_days: 30       # Lookback period for correlation calculation
+  max_correlation_exposure: 0.7 # Maximum correlation between positions
+  correlation_lookback_days: 30 # Lookback period for correlation calculation
 
 # Performance Monitoring
 monitoring:
   log_level: "INFO"
   metrics_update_interval_seconds: 60
   performance_window_days: 30
-  
+
   # Alert Thresholds
   alert_drawdown_pct: 5.0
   alert_win_rate_threshold: 0.4
-  alert_sharpe_threshold: 0.5 
+  alert_sharpe_threshold: 0.5

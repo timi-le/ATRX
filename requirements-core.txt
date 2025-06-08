@@ -64,4 +64,4 @@ isort>=5.12.0
 # Development & Documentation
 jupyter>=1.0.0
 matplotlib>=3.7.0
-seaborn>=0.12.0 
+seaborn>=0.12.0

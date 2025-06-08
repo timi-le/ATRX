@@ -8,11 +8,10 @@ import asyncio
 import os
 import tempfile
 from pathlib import Path
-from typing import AsyncGenerator, Generator
+from collections.abc import Generator
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-import pytest_asyncio
-from unittest.mock import AsyncMock, MagicMock
 
 # Test environment configuration
 os.environ["ENVIRONMENT"] = "test"
@@ -133,8 +132,8 @@ def mock_execution_engine():
 @pytest.fixture
 def sample_ohlc_data():
     """Provide sample OHLC data for testing."""
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     dates = pd.date_range(start="2024-01-01", periods=100, freq="1H")
 
@@ -165,8 +164,8 @@ def sample_ohlc_data():
 @pytest.fixture
 def sample_features():
     """Provide sample feature data for testing."""
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     np.random.seed(42)
     dates = pd.date_range(start="2024-01-01", periods=50, freq="1H")

@@ -131,7 +131,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     console.error('API Error:', error);
-    
+
     if (error.response?.status === 404) {
       throw new Error('Resource not found');
     } else if (error.response?.status === 400) {
@@ -139,9 +139,9 @@ api.interceptors.response.use(
     } else if (error.response?.status === 500) {
       throw new Error('Server error. Please try again later.');
     }
-    
+
     throw new Error(error.message || 'An error occurred');
   }
 );
 
-export default api; 
+export default api;

@@ -6,7 +6,7 @@ This directory contains the comprehensive Prometheus-based monitoring infrastruc
 
 The monitoring system tracks:
 - **Trading Performance**: PnL, equity curves, win rates, trade counts
-- **Execution Quality**: Latency, slippage, fill rates, order execution metrics  
+- **Execution Quality**: Latency, slippage, fill rates, order execution metrics
 - **Position Management**: Exposures, open positions, risk metrics
 - **Strategy Analytics**: Signal generation, regime detection, strategy performance
 - **System Health**: Resource usage, errors, market data lag
@@ -37,7 +37,7 @@ metrics = get_metrics()
 record_trade_execution(
     symbol="EURUSD",
     side="BUY",
-    status="filled", 
+    status="filled",
     latency_seconds=0.025,
     slippage_pips=1.2,
     pnl=250.50
@@ -131,11 +131,11 @@ for trade_result in trading_engine.execute_trades():
         status=trade_result.status,
         pnl=trade_result.pnl
     )
-    
+
     # Record execution metrics
     metrics.record_execution_latency(trade_result.latency)
     metrics.record_slippage(trade_result.slippage_pips)
-    
+
     # Update equity
     current_equity = portfolio.get_equity()
     metrics.update_pnl(current_equity)
@@ -233,7 +233,7 @@ Create dashboards with panels for:
 - Trade count and win rate gauges
 - Position exposure breakdown
 
-### Execution Quality Dashboard  
+### Execution Quality Dashboard
 - Execution latency histogram
 - Slippage distribution
 - Fill rate by symbol
@@ -266,7 +266,7 @@ groups:
       severity: warning
     annotations:
       summary: "High drawdown detected"
-      
+
   - alert: LowFillRate
     expr: fxai_fill_rate_ratio < 0.8
     for: 2m
@@ -274,7 +274,7 @@ groups:
       severity: critical
     annotations:
       summary: "Fill rate below 80%"
-      
+
   - alert: HighLatency
     expr: rate(fxai_execution_latency_seconds_sum[5m]) / rate(fxai_execution_latency_seconds_count[5m]) > 0.1
     for: 1m
@@ -298,7 +298,7 @@ Trading System  →  Metrics Server  →  Prometheus  →  Grafana
 
 - `metrics_server.py` - Core metrics collection and HTTP server
 - `prometheus.yml` - Prometheus configuration
-- `test_metrics_server.py` - Comprehensive test suite  
+- `test_metrics_server.py` - Comprehensive test suite
 - `demo_metrics_monitoring.py` - Interactive demonstration
 - `README.md` - This documentation
 
@@ -315,4 +315,4 @@ Trading System  →  Metrics Server  →  Prometheus  →  Grafana
 For questions or issues with the monitoring infrastructure:
 - Review test cases in `test_metrics_server.py`
 - Run the demo with `demo_metrics_monitoring.py`
-- Check Prometheus metrics at `http://localhost:9000/metrics` 
+- Check Prometheus metrics at `http://localhost:9000/metrics`

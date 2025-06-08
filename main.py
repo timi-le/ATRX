@@ -11,16 +11,14 @@ import logging
 import signal
 import sys
 from pathlib import Path
-from typing import Optional
 
-from core.config import SystemConfig, ConfigLoader
-from core.interfaces import Topics
+from core.config import SystemConfig
 
 
 class TradingSystemOrchestrator:
     """Main orchestrator for the FX AI-Quant Trading System."""
 
-    def __init__(self, config_path: Optional[Path] = None):
+    def __init__(self, config_path: Path | None = None):
         """Initialize the trading system orchestrator."""
         self.config = self._load_config(config_path)
         self.logger = self._setup_logging()
@@ -31,7 +29,7 @@ class TradingSystemOrchestrator:
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
 
-    def _load_config(self, config_path: Optional[Path]) -> SystemConfig:
+    def _load_config(self, config_path: Path | None) -> SystemConfig:
         """Load system configuration."""
         if config_path and config_path.exists():
             # TODO: Implement ConfigLoader
@@ -185,12 +183,10 @@ class TradingSystemOrchestrator:
     async def _system_heartbeat(self):
         """System heartbeat and status check."""
         # TODO: Implement system health monitoring
-        pass
 
     async def _health_checks(self):
         """Perform health checks on all components."""
         # TODO: Implement component health checks
-        pass
 
     async def shutdown(self):
         """Gracefully shutdown the trading system."""

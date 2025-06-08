@@ -7,64 +7,64 @@ training:
   sequence_length: 60
   n_features: 13
   prediction_horizon: 1
-  
+
   # Cross-validation settings
-  cv_method: "walk_forward"  # Options: walk_forward, time_series_kfold, purged_kfold
+  cv_method: "walk_forward" # Options: walk_forward, time_series_kfold, purged_kfold
   n_splits: 5
   test_size: 0.2
   validation_size: 0.2
-  gap: 5  # Gap between train/test to prevent leakage
-  
+  gap: 5 # Gap between train/test to prevent leakage
+
   # Walk-forward specific
   walk_forward:
-    train_window: 2520  # ~10 trading days worth of data
-    test_window: 252    # ~1 trading day
-    step_size: 63       # ~0.25 trading day
+    train_window: 2520 # ~10 trading days worth of data
+    test_window: 252 # ~1 trading day
+    step_size: 63 # ~0.25 trading day
     expanding_window: false
     min_train_size: 1000
-  
+
   # Time series k-fold specific
   time_series_kfold:
     max_train_size: 5000
     purge_length: 10
     embargo_length: 5
-  
+
   # Scoring metrics
-  primary_metric: "sharpe_ratio"  # Options: mse, mae, accuracy, sharpe_ratio, information_ratio, calmar_ratio
+  primary_metric: "sharpe_ratio" # Options: mse, mae, accuracy, sharpe_ratio, information_ratio, calmar_ratio
   secondary_metrics: ["mse", "mae", "accuracy"]
-  
+
   # Early stopping
   early_stopping:
     enabled: true
     patience: 10
     min_delta: 0.001
-    monitor: "val_loss"  # or "val_sharpe_ratio"
-    mode: "min"  # or "max" for sharpe_ratio
-  
+    monitor: "val_loss" # or "val_sharpe_ratio"
+    mode: "min" # or "max" for sharpe_ratio
+
   # Model saving
   save_best_only: true
   save_checkpoints: true
-  checkpoint_frequency: 5  # epochs
+  checkpoint_frequency: 5 # epochs
   export_onnx: true
 
 # LSTM Model Configuration
 lstm:
   # Architecture
-  units: [64, 32]  # Hidden units per layer
-  dropout: [0.2, 0.3]  # Dropout rates per layer
+  units: [64, 32] # Hidden units per layer
+  dropout: [0.2, 0.3] # Dropout rates per layer
   recurrent_dropout: 0.1
   return_sequences: false
-  
+
   # Regularization
   l1_reg: 0.0001
   l2_reg: 0.001
   batch_normalization: true
-  
+
   # Training parameters
   learning_rate: 0.001
   batch_size: 32
   epochs: 100
-  
+
   # Optimizer settings
   optimizer: "adam"
   adam:
@@ -72,15 +72,15 @@ lstm:
     beta_2: 0.999
     epsilon: 1e-7
     amsgrad: false
-  
+
   # Learning rate schedule
   lr_schedule:
     enabled: true
-    type: "reduce_on_plateau"  # Options: reduce_on_plateau, exponential_decay, cosine_annealing
+    type: "reduce_on_plateau" # Options: reduce_on_plateau, exponential_decay, cosine_annealing
     factor: 0.5
     patience: 5
     min_lr: 1e-6
-  
+
   # Hyperparameter search grid
   param_grid:
     units: [[32, 16], [64, 32], [128, 64]]
@@ -91,36 +91,36 @@ lstm:
 # CNN Model Configuration
 cnn:
   # Architecture
-  filters: [32, 64, 128]  # Filters per conv layer
-  kernel_sizes: [3, 3, 3]  # Kernel sizes per layer
+  filters: [32, 64, 128] # Filters per conv layer
+  kernel_sizes: [3, 3, 3] # Kernel sizes per layer
   strides: [1, 1, 1]
   padding: "same"
-  
+
   # Pooling
   pool_sizes: [2, 2, 2]
-  pool_type: "max"  # Options: max, average
-  
+  pool_type: "max" # Options: max, average
+
   # Dense layers
   dense_units: [64, 32]
-  dropout: [0.3, 0.4, 0.5]  # Dropout after each conv + dense layers
-  
+  dropout: [0.3, 0.4, 0.5] # Dropout after each conv + dense layers
+
   # Regularization
   l1_reg: 0.0001
   l2_reg: 0.001
   batch_normalization: true
-  
+
   # Training parameters
   learning_rate: 0.001
   batch_size: 64
   epochs: 100
-  
+
   # Optimizer settings
   optimizer: "adam"
   adam:
     beta_1: 0.9
     beta_2: 0.999
     epsilon: 1e-7
-  
+
   # Learning rate schedule
   lr_schedule:
     enabled: true
@@ -128,7 +128,7 @@ cnn:
     factor: 0.3
     patience: 7
     min_lr: 1e-6
-  
+
   # Hyperparameter search grid
   param_grid:
     filters: [[16, 32, 64], [32, 64, 128], [64, 128, 256]]
@@ -145,25 +145,25 @@ xgboost:
   subsample: 0.8
   colsample_bytree: 0.8
   colsample_bylevel: 0.8
-  
+
   # Regularization
-  reg_alpha: 0.1  # L1 regularization
-  reg_lambda: 1.0  # L2 regularization
-  gamma: 0.1  # Minimum split loss
+  reg_alpha: 0.1 # L1 regularization
+  reg_lambda: 1.0 # L2 regularization
+  gamma: 0.1 # Minimum split loss
   min_child_weight: 1
-  
+
   # Training parameters
-  objective: "reg:squarederror"  # Options: reg:squarederror, binary:logistic
+  objective: "reg:squarederror" # Options: reg:squarederror, binary:logistic
   eval_metric: "rmse"
   random_state: 42
   n_jobs: -1
-  
+
   # Early stopping
   early_stopping_rounds: 50
-  
+
   # Feature importance
-  importance_type: "gain"  # Options: weight, gain, cover, total_gain, total_cover
-  
+  importance_type: "gain" # Options: weight, gain, cover, total_gain, total_cover
+
   # Hyperparameter search grid
   param_grid:
     n_estimators: [500, 1000, 1500]
@@ -178,37 +178,37 @@ xgboost:
 ensemble:
   # Component models
   models: ["lstm", "cnn", "xgboost"]
-  
+
   # Ensemble method
-  method: "weighted_average"  # Options: simple_average, weighted_average, stacking, voting
-  
+  method: "weighted_average" # Options: simple_average, weighted_average, stacking, voting
+
   # Weights (for weighted_average)
   weights:
     lstm: 0.4
     cnn: 0.3
     xgboost: 0.3
-  
+
   # Stacking configuration (if method is stacking)
   stacking:
-    meta_learner: "linear_regression"  # Options: linear_regression, ridge, lasso, xgboost
+    meta_learner: "linear_regression" # Options: linear_regression, ridge, lasso, xgboost
     cv_folds: 5
     use_probabilities: false
-  
+
   # Voting configuration (if method is voting)
   voting:
-    voting_type: "soft"  # Options: hard, soft
-  
+    voting_type: "soft" # Options: hard, soft
+
   # Training parameters
-  retrain_components: false  # Whether to retrain individual models
-  use_pretrained: true  # Use pre-trained component models
+  retrain_components: false # Whether to retrain individual models
+  use_pretrained: true # Use pre-trained component models
 
 # Data Preprocessing Configuration
 preprocessing:
   # Feature scaling
   scaling:
-    method: "standard"  # Options: standard, minmax, robust, quantile
-    feature_range: [0, 1]  # For minmax scaling
-  
+    method: "standard" # Options: standard, minmax, robust, quantile
+    feature_range: [0, 1] # For minmax scaling
+
   # Feature engineering
   feature_engineering:
     enabled: true
@@ -217,36 +217,36 @@ preprocessing:
     technical_indicators: true
     volatility_features: true
     regime_features: true
-  
+
   # Outlier handling
   outlier_detection:
     enabled: true
-    method: "iqr"  # Options: iqr, zscore, isolation_forest
+    method: "iqr" # Options: iqr, zscore, isolation_forest
     threshold: 3.0
-    action: "clip"  # Options: remove, clip, transform
-  
+    action: "clip" # Options: remove, clip, transform
+
   # Missing value handling
   missing_values:
-    strategy: "forward_fill"  # Options: forward_fill, backward_fill, interpolate, drop
-    limit: 5  # Maximum consecutive missing values to fill
+    strategy: "forward_fill" # Options: forward_fill, backward_fill, interpolate, drop
+    limit: 5 # Maximum consecutive missing values to fill
 
 # Retraining Configuration
 retraining:
   # Schedule
   enabled: true
-  frequency: "daily"  # Options: hourly, daily, weekly, monthly
-  time: "02:00"  # Time of day for retraining (UTC)
-  
+  frequency: "daily" # Options: hourly, daily, weekly, monthly
+  time: "02:00" # Time of day for retraining (UTC)
+
   # Triggers
-  performance_threshold: 0.05  # Retrain if performance drops by this amount
-  data_drift_threshold: 0.1  # Retrain if data drift exceeds this
+  performance_threshold: 0.05 # Retrain if performance drops by this amount
+  data_drift_threshold: 0.1 # Retrain if data drift exceeds this
   min_days_between_retraining: 1
-  
+
   # Validation
   out_of_sample_validation: true
-  validation_window: 252  # Days for out-of-sample validation
-  min_validation_score: 0.6  # Minimum score to deploy new model
-  
+  validation_window: 252 # Days for out-of-sample validation
+  min_validation_score: 0.6 # Minimum score to deploy new model
+
   # Model versioning
   keep_n_versions: 5
   backup_before_update: true
@@ -259,24 +259,24 @@ output:
   logs_dir: "outputs/logs"
   plots_dir: "outputs/plots"
   onnx_dir: "outputs/onnx"
-  
+
   # File formats
-  model_format: "joblib"  # Options: joblib, pickle, h5
-  metrics_format: "json"  # Options: json, csv, parquet
-  
+  model_format: "joblib" # Options: joblib, pickle, h5
+  metrics_format: "json" # Options: json, csv, parquet
+
   # Logging
   log_level: "INFO"
   log_to_file: true
   log_to_console: true
-  
+
   # Visualization
   generate_plots: true
   plot_formats: ["png", "pdf"]
   plot_dpi: 300
-  
+
   # Reports
   generate_report: true
-  report_format: "html"  # Options: html, pdf, markdown
+  report_format: "html" # Options: html, pdf, markdown
   include_feature_importance: true
   include_learning_curves: true
   include_validation_curves: true
@@ -286,14 +286,14 @@ resources:
   # Memory management
   max_memory_gb: 8
   batch_processing: true
-  
+
   # Parallel processing
-  n_jobs: -1  # Use all available cores
-  parallel_backend: "threading"  # Options: threading, multiprocessing
-  
+  n_jobs: -1 # Use all available cores
+  parallel_backend: "threading" # Options: threading, multiprocessing
+
   # GPU settings
   use_gpu: false
-  gpu_memory_limit: 4096  # MB
+  gpu_memory_limit: 4096 # MB
   mixed_precision: false
 
 # Monitoring Configuration
@@ -301,21 +301,21 @@ monitoring:
   # Performance tracking
   track_metrics: true
   metrics_retention_days: 90
-  
+
   # Model drift detection
   drift_detection: true
   drift_methods: ["psi", "ks_test", "chi2_test"]
   drift_threshold: 0.1
-  
+
   # Alerts
   alerts:
     enabled: true
     performance_degradation: 0.1
     training_failure: true
     data_quality_issues: true
-  
+
   # Health checks
   health_checks:
     enabled: true
     frequency: "hourly"
-    checks: ["model_availability", "prediction_latency", "data_freshness"] 
+    checks: ["model_availability", "prediction_latency", "data_freshness"]

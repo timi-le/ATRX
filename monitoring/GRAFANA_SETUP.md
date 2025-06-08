@@ -7,7 +7,7 @@ This is the complete Grafana monitoring stack for the FX Quant Trading System (T
 ## 📦 Components
 
 - **Grafana**: Visualization and dashboarding (Port 3000)
-- **Prometheus**: Metrics collection and storage (Port 9090) 
+- **Prometheus**: Metrics collection and storage (Port 9090)
 - **Alertmanager**: Alert routing and notification (Port 9093)
 - **FX Metrics Server**: Custom metrics from trading system (Port 9000)
 
@@ -106,7 +106,7 @@ GF_SECURITY_ADMIN_PASSWORD: admin
 GF_INSTALL_PLUGINS: grafana-piechart-panel
 GF_USERS_ALLOW_SIGN_UP: false
 
-# Prometheus Configuration  
+# Prometheus Configuration
 - Port: 9090
 - Scrape Interval: 5 seconds
 - Data Retention: 200 hours
@@ -155,7 +155,7 @@ python test_grafana_setup.py
 
 # Expected output:
 # ✅ Docker Containers: PASSED
-# ✅ Metrics Server: PASSED  
+# ✅ Metrics Server: PASSED
 # ✅ Prometheus: PASSED
 # ✅ Grafana: PASSED
 # ✅ Grafana Datasource: PASSED
@@ -286,7 +286,7 @@ metrics = get_metrics()
 # Record trade execution
 metrics.record_trade(
     symbol="EURUSD",
-    side="BUY", 
+    side="BUY",
     status="filled",
     pnl=150.25
 )
@@ -409,7 +409,7 @@ ports:
 ### Regular Tasks
 
 1. **Weekly**: Review alert thresholds and update based on trading patterns
-2. **Monthly**: Clean up old Prometheus data and optimize queries  
+2. **Monthly**: Clean up old Prometheus data and optimize queries
 3. **Quarterly**: Update dashboard layouts and add new metrics
 
 ### Backup Strategy
@@ -471,4 +471,4 @@ For issues related to this monitoring setup:
 
 **Task 20: Dashboard and Visualization - Complete** ✅
 
-This monitoring stack provides production-ready visibility into your FX trading system performance and health metrics. 
+This monitoring stack provides production-ready visibility into your FX trading system performance and health metrics.

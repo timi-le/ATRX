@@ -3,11 +3,11 @@ Trading interface definitions for the FX AI-Quant Trading System.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Tuple, Any, Union
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-import pandas as pd
-from dataclasses import dataclass
+from typing import Any
+
 
 
 class OrderType(Enum):
@@ -38,7 +38,7 @@ class OrderStatus(Enum):
 
 class PositionType(Enum):
     """Position types."""
-    
+
     LONG = "long"
     SHORT = "short"
     FLAT = "flat"
@@ -46,7 +46,7 @@ class PositionType(Enum):
 
 class SignalType(Enum):
     """Signal types."""
-    
+
     BUY = "buy"
     SELL = "sell"
     HOLD = "hold"
@@ -63,9 +63,9 @@ class Order:
         side: OrderSide,
         order_type: OrderType,
         quantity: float,
-        price: Optional[float] = None,
-        stop_price: Optional[float] = None,
-        timestamp: Optional[datetime] = None,
+        price: float | None = None,
+        stop_price: float | None = None,
+        timestamp: datetime | None = None,
     ):
         self.order_id = order_id
         self.symbol = symbol
@@ -102,6 +102,7 @@ class Position:
 @dataclass
 class Signal:
     """Represents a trading signal from a strategy."""
+
     symbol: str
     side: OrderSide
     size: float  # The quantity or amount to trade
@@ -110,12 +111,12 @@ class Signal:
     confidence: float  # Model confidence (0-1)
     strategy_name: str
     timestamp: datetime
-    price: Optional[float] = None
-    sl: Optional[float] = None
-    features: Optional[Dict[str, float]] = None
-    take_profit_pips: Optional[float] = None
-    stop_loss_pips: Optional[float] = None
-    win_probability: Optional[float] = None
+    price: float | None = None
+    sl: float | None = None
+    features: dict[str, float] | None = None
+    take_profit_pips: float | None = None
+    stop_loss_pips: float | None = None
+    win_probability: float | None = None
 
 
 class Strategy(ABC):
@@ -125,26 +126,22 @@ class Strategy(ABC):
     async def generate_signal(
         self,
         market_data: Any,
-        features: Optional[Dict[str, float]] = None,
-        regime: Optional[str] = None,
-    ) -> Optional[Signal]:
+        features: dict[str, float] | None = None,
+        regime: str | None = None,
+    ) -> Signal | None:
         """Generate a trading signal."""
-        pass
 
     @abstractmethod
-    async def update_parameters(self, params: Dict[str, Any]) -> None:
+    async def update_parameters(self, params: dict[str, Any]) -> None:
         """Update strategy parameters."""
-        pass
 
     @abstractmethod
-    def get_parameters(self) -> Dict[str, Any]:
+    def get_parameters(self) -> dict[str, Any]:
         """Get current strategy parameters."""
-        pass
 
     @abstractmethod
     def get_name(self) -> str:
         """Get strategy name."""
-        pass
 
 
 class PositionSizer(ABC):
@@ -155,25 +152,22 @@ class PositionSizer(ABC):
         self,
         signal: Signal,
         account_balance: float,
-        current_positions: Dict[str, Position],
-        volatility: Optional[float] = None,
+        current_positions: dict[str, Position],
+        volatility: float | None = None,
     ) -> float:
         """Calculate optimal position size using Kelly criterion."""
-        pass
 
     @abstractmethod
     async def calculate_kelly_fraction(
         self, win_probability: float, avg_win: float, avg_loss: float
     ) -> float:
         """Calculate Kelly fraction: f* = (bp - q) / b"""
-        pass
 
     @abstractmethod
     async def apply_risk_limits(
         self, position_size: float, symbol: str, account_balance: float
     ) -> float:
         """Apply maximum allocation caps and risk limits."""
-        pass
 
 
 class RiskManager(ABC):
@@ -183,38 +177,33 @@ class RiskManager(ABC):
     async def check_pre_trade_risk(
         self,
         order: Order,
-        current_positions: Dict[str, Position],
+        current_positions: dict[str, Position],
         account_balance: float,
     ) -> bool:
         """Check if order passes pre-trade risk checks."""
-        pass
 
     @abstractmethod
     async def monitor_drawdown(self, current_pnl: float, peak_pnl: float) -> bool:
         """Monitor drawdown levels."""
-        pass
 
     @abstractmethod
     async def calculate_var(
         self,
-        positions: Dict[str, Position],
+        positions: dict[str, Position],
         confidence_level: float = 0.95,
         horizon_days: int = 1,
     ) -> float:
         """Calculate Value at Risk."""
-        pass
 
     @abstractmethod
     async def check_position_limits(
-        self, symbol: str, new_quantity: float, current_positions: Dict[str, Position]
+        self, symbol: str, new_quantity: float, current_positions: dict[str, Position]
     ) -> bool:
         """Check position size limits."""
-        pass
 
     @abstractmethod
     async def emergency_stop(self, reason: str) -> None:
         """Emergency stop trading."""
-        pass
 
 
 class ExecutionEngine(ABC):
@@ -223,27 +212,22 @@ class ExecutionEngine(ABC):
     @abstractmethod
     async def submit_order(self, order: Order) -> str:
         """Submit order for execution."""
-        pass
 
     @abstractmethod
     async def cancel_order(self, order_id: str) -> bool:
         """Cancel an existing order."""
-        pass
 
     @abstractmethod
     async def get_order_status(self, order_id: str) -> OrderStatus:
         """Get current order status."""
-        pass
 
     @abstractmethod
-    async def get_positions(self) -> Dict[str, Position]:
+    async def get_positions(self) -> dict[str, Position]:
         """Get current positions."""
-        pass
 
     @abstractmethod
     async def get_account_balance(self) -> float:
         """Get current account balance."""
-        pass
 
 
 class OrderManager(ABC):
@@ -252,23 +236,19 @@ class OrderManager(ABC):
     @abstractmethod
     async def slice_order(
         self, order: Order, slice_size: float, time_interval: int
-    ) -> List[Order]:
+    ) -> list[Order]:
         """Slice large order using TWAP/POV."""
-        pass
 
     @abstractmethod
     async def manage_order_lifecycle(self, order: Order) -> None:
         """Manage complete order lifecycle."""
-        pass
 
     @abstractmethod
     async def calculate_execution_quality(
-        self, order: Order, fills: List[Dict[str, Any]]
-    ) -> Dict[str, float]:
+        self, order: Order, fills: list[dict[str, Any]]
+    ) -> dict[str, float]:
         """Calculate execution quality metrics."""
-        pass
 
     @abstractmethod
     async def get_slippage(self, order: Order, reference_price: float) -> float:
         """Calculate execution slippage."""
-        pass

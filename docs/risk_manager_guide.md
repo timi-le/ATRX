@@ -70,7 +70,7 @@ emergency_controls:
   kill_switch_triggers:
     daily_loss_threshold: 0.05      # 5% daily loss triggers kill switch
     total_loss_threshold: 0.15      # 15% total loss triggers kill switch
-  
+
   manual_override:
     enabled: true                   # Allow manual override
     override_duration_hours: 24     # Override duration
@@ -146,7 +146,7 @@ await risk_manager.emergency_stop("Market volatility spike")
 
 # Set manual override
 await risk_manager.set_manual_override(
-    duration_hours=12, 
+    duration_hours=12,
     reason="News event trading"
 )
 
@@ -405,4 +405,4 @@ Factory function to create a configured risk manager instance.
 
 ## License
 
-This module is part of the FX AI-Quant Trading System and follows the project's licensing terms. 
+This module is part of the FX AI-Quant Trading System and follows the project's licensing terms.

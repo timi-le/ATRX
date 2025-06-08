@@ -33,7 +33,7 @@ This document provides a detailed summary of the production-grade ML training pi
 ```python
 class TimeSeriesKFold:
     """Time-series aware cross-validation with configurable gaps."""
-    
+
     def __init__(self, n_splits=5, max_train_size=None, gap=0):
         self.n_splits = n_splits
         self.max_train_size = max_train_size
@@ -49,7 +49,7 @@ class TimeSeriesKFold:
 ```python
 class WalkForwardOptimizer:
     """Walk-forward validation for realistic backtesting."""
-    
+
     def __init__(self, train_window=2520, test_window=252, step_size=63):
         self.train_window = train_window  # ~10 years daily data
         self.test_window = test_window    # ~1 year test period
@@ -65,7 +65,7 @@ class WalkForwardOptimizer:
 ```python
 class PurgedKFold:
     """Purged cross-validation preventing data leakage."""
-    
+
     def __init__(self, n_splits=5, purge_length=10, embargo_length=5):
         self.purge_length = purge_length    # Remove overlapping samples
         self.embargo_length = embargo_length # Additional safety margin
@@ -110,9 +110,9 @@ def calmar_ratio_score(y_true, y_pred):
 #### Synthetic Data Generation
 ```python
 def generate_synthetic_data(
-    self, 
-    n_samples=10000, 
-    sequence_length=60, 
+    self,
+    n_samples=10000,
+    sequence_length=60,
     n_features=13,
     prediction_type=PredictionType.RETURN_REGRESSION,
     add_regime_changes=True,
@@ -183,7 +183,7 @@ def train_cnn_model(self, X, y, optimize_hyperparameters=True):
 ```python
 class DataDriftDetector:
     """Multi-method drift detection system."""
-    
+
     def __init__(self, reference_data, threshold=0.1):
         self.reference_data = reference_data
         self.threshold = threshold
@@ -198,7 +198,7 @@ class DataDriftDetector:
 ```python
 class ModelVersionManager:
     """Comprehensive model versioning system."""
-    
+
     def __init__(self, models_dir, max_versions=5):
         self.models_dir = models_dir
         self.max_versions = max_versions
@@ -216,7 +216,7 @@ class ModelVersionManager:
 
 **Total Tests: 32**
 - ✅ Cross-validation utilities: 8 tests
-- ✅ Data drift detection: 4 tests  
+- ✅ Data drift detection: 4 tests
 - ✅ Model version management: 4 tests
 - ✅ Production training pipeline: 6 tests
 - ✅ Retraining scheduler: 10 tests
@@ -439,6 +439,6 @@ The system is ready for integration with live trading systems and provides a sol
 
 ---
 
-**Generated:** $(date)  
-**Version:** 1.0.0  
-**Status:** ✅ Production Ready 
+**Generated:** $(date)
+**Version:** 1.0.0
+**Status:** ✅ Production Ready

@@ -24,10 +24,10 @@ technical_indicators:
   bollinger_period: 20
   bollinger_std: 2.0
 metadata:
-  created: '2025-06-04T21:01:33.970947'
+  created: "2025-06-04T21:01:33.970947"
   version: 1.0.0
   description: Default parameter configuration
-  last_modified: '2025-06-04T21:01:41.888488'
+  last_modified: "2025-06-04T21:01:41.888488"
   changes_count: 2
 grid_step_factor: 0.4
 max_levels: 7

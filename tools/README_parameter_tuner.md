@@ -304,7 +304,7 @@ The demo showcases:
 
 ---
 
-**Created**: June 4, 2025  
-**Version**: 1.0.0  
-**Authors**: FX AI-Quant Development Team  
-**Status**: Production Ready ✅ 
+**Created**: June 4, 2025
+**Version**: 1.0.0
+**Authors**: FX AI-Quant Development Team
+**Status**: Production Ready ✅

@@ -239,14 +239,14 @@ class RegimeDetectionClient:
     def __init__(self, base_url="http://localhost:8000"):
         self.base_url = base_url
         self.session = requests.Session()
-    
+
     def predict_regime(self, features):
         response = self.session.post(
             f"{self.base_url}/regime/predict",
             json=features
         )
         return response.json()
-    
+
     def get_current_regime(self):
         response = self.session.get(f"{self.base_url}/regime/current")
         return response.json()
@@ -274,12 +274,12 @@ class RegimeDetectionClient {
             headers: { 'Content-Type': 'application/json' }
         });
     }
-    
+
     async predictRegime(features) {
         const response = await this.client.post('/regime/predict', features);
         return response.data;
     }
-    
+
     async getCurrentRegime() {
         const response = await this.client.get('/regime/current');
         return response.data;
@@ -381,4 +381,4 @@ This project is part of the FX AI-Quant Trading System and is proprietary softwa
 For issues and questions:
 - Check the `/docs` endpoint for interactive documentation
 - Review the test files for usage examples
-- Run the demo script for comprehensive testing 
+- Run the demo script for comprehensive testing

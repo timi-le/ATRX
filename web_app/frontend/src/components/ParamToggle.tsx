@@ -61,4 +61,4 @@ export const ParamToggle: React.FC<ParamToggleProps> = ({
       )}
     </div>
   );
-}; 
+};

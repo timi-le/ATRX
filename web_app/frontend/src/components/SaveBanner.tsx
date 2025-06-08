@@ -22,13 +22,13 @@ export const SaveBanner: React.FC<SaveBannerProps> = ({
   useEffect(() => {
     if (show) {
       setIsVisible(true);
-      
+
       if (autoHide) {
         const timer = setTimeout(() => {
           setIsVisible(false);
           onClose?.();
         }, duration);
-        
+
         return () => clearTimeout(timer);
       }
     } else {
@@ -71,4 +71,4 @@ export const SaveBanner: React.FC<SaveBannerProps> = ({
       </div>
     </div>
   );
-}; 
+};

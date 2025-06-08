@@ -9,4 +9,4 @@
 #   • Kurtosis / Skewness of returns
 #   • Rolling entropy of price change
 #   • Rolling Bollinger Band Width (volatility compression proxy)
-#   • Spread vs. candle range (liquidity squeeze proxy) 
+#   • Spread vs. candle range (liquidity squeeze proxy)

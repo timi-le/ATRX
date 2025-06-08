@@ -2,21 +2,24 @@
 Messaging interface definitions for the FX AI-Quant Trading System.
 """
 
-from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, Callable, Any, AsyncIterator
-from datetime import datetime
-from dataclasses import dataclass, field
 import asyncio
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Any
+
+from collections.abc import AsyncIterator, Callable
 
 
 @dataclass
 class Message:
     """Standardized message structure."""
+
     topic: str
     data: Any
     timestamp: datetime = field(default_factory=datetime.now)
-    message_id: Optional[str] = None
-    source: Optional[str] = None
+    message_id: str | None = None
+    source: str | None = None
 
 
 class MessageBus(ABC):
@@ -25,32 +28,26 @@ class MessageBus(ABC):
     @abstractmethod
     async def start(self) -> None:
         """Start the message bus."""
-        pass
 
     @abstractmethod
     async def stop(self) -> None:
         """Stop the message bus."""
-        pass
 
     @abstractmethod
     async def publish(self, topic: str, message: Any) -> None:
         """Publish a message to a topic."""
-        pass
 
     @abstractmethod
     async def subscribe(self, topic: str) -> AsyncIterator[Message]:
         """Subscribe to a topic and receive messages."""
-        pass
 
     @abstractmethod
     async def unsubscribe(self, topic: str) -> None:
         """Unsubscribe from a topic."""
-        pass
 
     @abstractmethod
     def is_connected(self) -> bool:
         """Check if message bus is connected."""
-        pass
 
 
 class Publisher(ABC):
@@ -59,24 +56,20 @@ class Publisher(ABC):
     @abstractmethod
     async def connect(self) -> None:
         """Connect to the messaging system."""
-        pass
 
     @abstractmethod
     async def disconnect(self) -> None:
         """Disconnect from the messaging system."""
-        pass
 
     @abstractmethod
     async def publish(
-        self, topic: str, data: Any, routing_key: Optional[str] = None
+        self, topic: str, data: Any, routing_key: str | None = None
     ) -> None:
         """Publish data to a topic."""
-        pass
 
     @abstractmethod
-    async def publish_batch(self, messages: List[Dict[str, Any]]) -> None:
+    async def publish_batch(self, messages: list[dict[str, Any]]) -> None:
         """Publish multiple messages at once."""
-        pass
 
 
 class Subscriber(ABC):
@@ -85,31 +78,26 @@ class Subscriber(ABC):
     @abstractmethod
     async def connect(self) -> None:
         """Connect to the messaging system."""
-        pass
 
     @abstractmethod
     async def disconnect(self) -> None:
         """Disconnect from the messaging system."""
-        pass
 
     @abstractmethod
     async def subscribe(
-        self, topic: str, callback: Optional[Callable[[Message], None]] = None
+        self, topic: str, callback: Callable[[Message], None] | None = None
     ) -> AsyncIterator[Message]:
         """Subscribe to a topic."""
-        pass
 
     @abstractmethod
     async def unsubscribe(self, topic: str) -> None:
         """Unsubscribe from a topic."""
-        pass
 
     @abstractmethod
     async def subscribe_pattern(
-        self, pattern: str, callback: Optional[Callable[[Message], None]] = None
+        self, pattern: str, callback: Callable[[Message], None] | None = None
     ) -> AsyncIterator[Message]:
         """Subscribe to topics matching a pattern."""
-        pass
 
 
 class MessageHandler(ABC):
@@ -118,17 +106,14 @@ class MessageHandler(ABC):
     @abstractmethod
     async def handle_message(self, message: Message) -> None:
         """Process an incoming message."""
-        pass
 
     @abstractmethod
     async def handle_error(self, error: Exception, message: Message) -> None:
         """Handle message processing errors."""
-        pass
 
     @abstractmethod
-    def get_supported_topics(self) -> List[str]:
+    def get_supported_topics(self) -> list[str]:
         """Get list of topics this handler supports."""
-        pass
 
 
 class ZeroMQPublisher(Publisher):
@@ -137,12 +122,10 @@ class ZeroMQPublisher(Publisher):
     @abstractmethod
     async def bind(self, address: str) -> None:
         """Bind to a ZeroMQ address."""
-        pass
 
     @abstractmethod
     async def connect_to(self, address: str) -> None:
         """Connect to a ZeroMQ address."""
-        pass
 
 
 class ZeroMQSubscriber(Subscriber):
@@ -151,17 +134,14 @@ class ZeroMQSubscriber(Subscriber):
     @abstractmethod
     async def bind(self, address: str) -> None:
         """Bind to a ZeroMQ address."""
-        pass
 
     @abstractmethod
     async def connect_to(self, address: str) -> None:
         """Connect to a ZeroMQ address."""
-        pass
 
     @abstractmethod
     async def set_subscription_filter(self, filter_prefix: str) -> None:
         """Set message filter for subscriptions."""
-        pass
 
 
 class RedisPublisher(Publisher):
@@ -173,17 +153,15 @@ class RedisPublisher(Publisher):
         host: str = "localhost",
         port: int = 6379,
         db: int = 0,
-        password: Optional[str] = None,
+        password: str | None = None,
     ) -> None:
         """Set Redis connection parameters."""
-        pass
 
     @abstractmethod
     async def publish_stream(
-        self, stream_name: str, data: Dict[str, Any], max_length: Optional[int] = None
+        self, stream_name: str, data: dict[str, Any], max_length: int | None = None
     ) -> str:
         """Publish to Redis Stream."""
-        pass
 
 
 class RedisSubscriber(Subscriber):
@@ -195,10 +173,9 @@ class RedisSubscriber(Subscriber):
         host: str = "localhost",
         port: int = 6379,
         db: int = 0,
-        password: Optional[str] = None,
+        password: str | None = None,
     ) -> None:
         """Set Redis connection parameters."""
-        pass
 
     @abstractmethod
     async def subscribe_stream(
@@ -209,14 +186,12 @@ class RedisSubscriber(Subscriber):
         start_id: str = ">",
     ) -> AsyncIterator[Message]:
         """Subscribe to Redis Stream."""
-        pass
 
     @abstractmethod
     async def acknowledge_message(
         self, stream_name: str, consumer_group: str, message_id: str
     ) -> None:
         """Acknowledge message processing."""
-        pass
 
 
 # Topic constants for the system
@@ -227,10 +202,10 @@ class Topics:
     MARKET_DATA_TICKS = "market.data.ticks"
     MARKET_DATA_BARS = "market.data.bars"
     MARKET_DATA_L2 = "market.data.level2"
-    
+
     # Provider-specific market data topics
     MARKET_DATA_OANDA = "market.data.oanda"
-    MARKET_DATA_DUKASCOPY = "market.data.dukascopy" 
+    MARKET_DATA_DUKASCOPY = "market.data.dukascopy"
     MARKET_DATA_MOCK = "market.data.mock"
 
     # Feature topics
@@ -259,60 +234,59 @@ class Topics:
     SYSTEM_HEALTH = "system.health"
     SYSTEM_METRICS = "system.metrics"
     SYSTEM_ALERTS = "system.alerts"
-    
+
     # Provider health topics
     PROVIDER_HEALTH_OANDA = "provider.health.oanda"
     PROVIDER_HEALTH_DUKASCOPY = "provider.health.dukascopy"
-    
+
     @classmethod
     def get_provider_data_topic(cls, provider: str) -> str:
         """Get the market data topic for a specific provider."""
         provider_topics = {
             "oanda": cls.MARKET_DATA_OANDA,
             "dukascopy": cls.MARKET_DATA_DUKASCOPY,
-            "mock": cls.MARKET_DATA_MOCK
+            "mock": cls.MARKET_DATA_MOCK,
         }
         return provider_topics.get(provider.lower(), cls.MARKET_DATA_TICKS)
-    
+
     @classmethod
     def get_provider_health_topic(cls, provider: str) -> str:
         """Get the health topic for a specific provider."""
         provider_health_topics = {
             "oanda": cls.PROVIDER_HEALTH_OANDA,
-            "dukascopy": cls.PROVIDER_HEALTH_DUKASCOPY
+            "dukascopy": cls.PROVIDER_HEALTH_DUKASCOPY,
         }
         return provider_health_topics.get(provider.lower(), cls.SYSTEM_HEALTH)
 
 
 class ZeroMQMessageBus(MessageBus):
     """ZeroMQ implementation of MessageBus."""
-    
+
     def __init__(self, bind_address: str = "tcp://*:5555"):
         self.bind_address = bind_address
         self._connected = False
-    
+
     async def start(self) -> None:
         """Start the ZeroMQ message bus."""
         self._connected = True
-    
+
     async def stop(self) -> None:
         """Stop the ZeroMQ message bus."""
         self._connected = False
-    
+
     async def publish(self, topic: str, message: Any) -> None:
         """Publish a message to a topic via ZeroMQ."""
         pass  # Implementation would use pyzmq
-    
+
     async def subscribe(self, topic: str) -> AsyncIterator[Message]:
         """Subscribe to a topic via ZeroMQ."""
         while self._connected:
             yield Message(topic=topic, data={})
             await asyncio.sleep(0.1)
-    
+
     async def unsubscribe(self, topic: str) -> None:
         """Unsubscribe from a topic."""
-        pass
-    
+
     def is_connected(self) -> bool:
         """Check if ZeroMQ message bus is connected."""
         return self._connected
@@ -320,35 +294,34 @@ class ZeroMQMessageBus(MessageBus):
 
 class RedisMessageBus(MessageBus):
     """Redis implementation of MessageBus."""
-    
+
     def __init__(self, host: str = "localhost", port: int = 6379, db: int = 0):
         self.host = host
         self.port = port
         self.db = db
         self._connected = False
-    
+
     async def start(self) -> None:
         """Start the Redis message bus."""
         self._connected = True
-    
+
     async def stop(self) -> None:
         """Stop the Redis message bus."""
         self._connected = False
-    
+
     async def publish(self, topic: str, message: Any) -> None:
         """Publish a message to a topic via Redis."""
         pass  # Implementation would use aioredis
-    
+
     async def subscribe(self, topic: str) -> AsyncIterator[Message]:
         """Subscribe to a topic via Redis."""
         while self._connected:
             yield Message(topic=topic, data={})
             await asyncio.sleep(0.1)
-    
+
     async def unsubscribe(self, topic: str) -> None:
         """Unsubscribe from a topic."""
-        pass
-    
+
     def is_connected(self) -> bool:
         """Check if Redis message bus is connected."""
         return self._connected

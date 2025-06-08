@@ -24,6 +24,6 @@ technical_indicators:
   bollinger_period: 20
   bollinger_std: 2.0
 metadata:
-  created: '2025-06-06T11:43:49.047234'
+  created: "2025-06-06T11:43:49.047234"
   version: 1.0.0
   description: Default parameter configuration

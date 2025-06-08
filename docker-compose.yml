@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # Redis for pub/sub messaging
@@ -38,12 +38,12 @@ services:
       - prometheus_data:/prometheus
     restart: unless-stopped
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=30d'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
 
   # Grafana for dashboards
   grafana:
@@ -83,9 +83,9 @@ services:
       - postgres
     restart: unless-stopped
     ports:
-      - "8000:8000"  # Prometheus metrics
-      - "5555:5555"  # ZeroMQ publisher
-      - "5556:5556"  # ZeroMQ subscriber
+      - "8000:8000" # Prometheus metrics
+      - "5555:5555" # ZeroMQ publisher
+      - "5556:5556" # ZeroMQ subscriber
 
 volumes:
   redis_data:
@@ -95,4 +95,4 @@ volumes:
 
 networks:
   default:
-    name: fx_trading_network 
+    name: fx_trading_network

@@ -283,4 +283,4 @@ For questions and support, refer to:
 
 ---
 
-*Built with precision for FX market trading excellence* 🎯 
+*Built with precision for FX market trading excellence* 🎯

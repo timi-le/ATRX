@@ -5,6 +5,6 @@ This module handles system configuration including data sources,
 trading parameters, risk limits, and environment settings.
 """
 
-from .settings import SystemConfig, TradingConfig, RiskConfig, DataConfig
+from .settings import DataConfig, RiskConfig, SystemConfig, TradingConfig
 
 __all__ = ["SystemConfig", "TradingConfig", "RiskConfig", "DataConfig"]

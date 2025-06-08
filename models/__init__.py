@@ -3,7 +3,7 @@ ML Models Package for FX AI-Quant Trading System.
 
 This package contains machine learning models for financial prediction including:
 - LSTM models for sequential pattern recognition
-- CNN models for localized pattern detection  
+- CNN models for localized pattern detection
 - XGBoost models for tabular data
 - Ensemble models combining multiple predictors
 - ONNX export capabilities for production deployment
@@ -12,31 +12,35 @@ This package contains machine learning models for financial prediction including
 from models.predictor_interface import (
     BasePredictorModel,
     ModelConfig,
-    TrainingMetrics,
+    ModelType,
     PredictionType,
-    ModelType
+    TrainingMetrics,
 )
 
 try:
-    from models.lstm_model import LSTMPredictor, create_lstm_config
+    from models.lstm_model import LSTMPredictor
+
     LSTM_AVAILABLE = True
 except ImportError:
     LSTM_AVAILABLE = False
 
 try:
-    from models.cnn_model import CNNPredictor, create_cnn_config
+    from models.cnn_model import CNNPredictor
+
     CNN_AVAILABLE = True
 except ImportError:
     CNN_AVAILABLE = False
 
 try:
-    from models.xgboost_model import XGBoostPredictor, create_xgboost_config
+    from models.xgboost_model import XGBoostPredictor
+
     XGBOOST_AVAILABLE = True
 except ImportError:
     XGBOOST_AVAILABLE = False
 
 try:
-    from models.ensemble_model import EnsembleMLPredictor, create_ensemble_config
+    from models.ensemble_model import EnsembleMLPredictor
+
     ENSEMBLE_AVAILABLE = True
 except ImportError:
     ENSEMBLE_AVAILABLE = False
@@ -44,14 +48,13 @@ except ImportError:
 __all__ = [
     # Base interfaces
     "BasePredictorModel",
-    "ModelConfig", 
+    "ModelConfig",
     "TrainingMetrics",
     "PredictionType",
     "ModelType",
-    
     # Model availability flags
     "LSTM_AVAILABLE",
-    "CNN_AVAILABLE", 
+    "CNN_AVAILABLE",
     "XGBOOST_AVAILABLE",
     "ENSEMBLE_AVAILABLE",
 ]
@@ -73,7 +76,7 @@ if ENSEMBLE_AVAILABLE:
 def get_available_models():
     """Get list of available model types."""
     available = []
-    
+
     if LSTM_AVAILABLE:
         available.append("lstm")
     if CNN_AVAILABLE:
@@ -82,14 +85,14 @@ def get_available_models():
         available.append("xgboost")
     if ENSEMBLE_AVAILABLE:
         available.append("ensemble")
-    
+
     return available
 
 
 def create_model(model_type: str, config: ModelConfig):
     """Factory function to create models by type."""
     model_type = model_type.lower()
-    
+
     if model_type == "lstm" and LSTM_AVAILABLE:
         return LSTMPredictor(config)
     elif model_type == "cnn" and CNN_AVAILABLE:
