@@ -1,0 +1,145 @@
+{
+  "download_time": "2025-06-08T14:08:43.977806",
+  "broker_config": {
+    "login": 210112936,
+    "server": "Exness-MT5Trial9",
+    "company": "N/A"
+  },
+  "total_symbols": 3,
+  "total_timeframes": 7,
+  "date_range": {
+    "start": "2018-01-01T00:00:00",
+    "end": "2025-03-31T00:00:00"
+  },
+  "results": {
+    "EURUSD": {
+      "M1": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "M5": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "M15": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "M30": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "H1": {
+        "filepath": "data/forex/mt5_live\\EURUSD_H1_mt5_live.csv",
+        "rows": 24022,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-30 23:00:00",
+        "success": true
+      },
+      "H4": {
+        "filepath": "data/forex/mt5_live\\EURUSD_H4_mt5_live.csv",
+        "rows": 6917,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-30 20:00:00",
+        "success": true
+      },
+      "D1": {
+        "filepath": "data/forex/mt5_live\\EURUSD_D1_mt5_live.csv",
+        "rows": 2103,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-30 00:00:00",
+        "success": true
+      }
+    },
+    "GBPUSD": {
+      "M1": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "M5": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "M15": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "M30": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "H1": {
+        "filepath": "data/forex/mt5_live\\GBPUSD_H1_mt5_live.csv",
+        "rows": 24092,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-30 23:00:00",
+        "success": true
+      },
+      "H4": {
+        "filepath": "data/forex/mt5_live\\GBPUSD_H4_mt5_live.csv",
+        "rows": 6986,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-30 20:00:00",
+        "success": true
+      },
+      "D1": {
+        "filepath": "data/forex/mt5_live\\GBPUSD_D1_mt5_live.csv",
+        "rows": 2103,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-30 00:00:00",
+        "success": true
+      }
+    },
+    "USDJPY": {
+      "M1": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "M5": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "M15": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "M30": {
+        "filepath": "",
+        "rows": 0,
+        "success": false
+      },
+      "H1": {
+        "filepath": "data/forex/mt5_live\\USDJPY_H1_mt5_live.csv",
+        "rows": 24022,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-30 23:00:00",
+        "success": true
+      },
+      "H4": {
+        "filepath": "data/forex/mt5_live\\USDJPY_H4_mt5_live.csv",
+        "rows": 6917,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-30 20:00:00",
+        "success": true
+      },
+      "D1": {
+        "filepath": "data/forex/mt5_live\\USDJPY_D1_mt5_live.csv",
+        "rows": 2103,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-30 00:00:00",
+        "success": true
+      }
+    }
+  }
+}

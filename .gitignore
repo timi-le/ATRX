@@ -106,14 +106,11 @@ debug_output.txt
 temp/
 tmp/
 
-# Trading and financial data
+# CSV files (generally ignored, but allow specific forex data directories)
 *.csv
-data/*.csv
-historical_data/
-market_data/
-
-# Exception: Allow forex training data
 !data/forex/*.csv
+!data/forex/combined/*.csv
+!data/forex/mt5_live/*.csv
 
 # Model files (can be large)
 *.pkl

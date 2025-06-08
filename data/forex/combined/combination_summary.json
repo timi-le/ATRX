@@ -1,0 +1,212 @@
+{
+  "generation_time": "2025-06-08T14:23:53.877030",
+  "approach": "Data Augmentation - Synthetic + Real MT5 Combined",
+  "source_directories": {
+    "synthetic": "data/forex",
+    "real_mt5": "data/forex/mt5_live",
+    "output": "data/forex/combined"
+  },
+  "symbols": [
+    "EURUSD",
+    "GBPUSD",
+    "USDJPY"
+  ],
+  "timeframes": [
+    "M5",
+    "M15",
+    "M30",
+    "H1",
+    "H4",
+    "D1"
+  ],
+  "combination_strategy": {
+    "real_enhanced": [
+      "H1",
+      "H4",
+      "D1"
+    ],
+    "synthetic_only": [
+      "M5",
+      "M15",
+      "M30"
+    ]
+  },
+  "results": {
+    "EURUSD": {
+      "M5": {
+        "filepath": "data/forex/combined\\EURUSD_M5_combined.csv",
+        "rows": 762049,
+        "synthetic_rows": 762049,
+        "real_rows": 0,
+        "start_date": "2018-01-01 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "M15": {
+        "filepath": "data/forex/combined\\EURUSD_M15_combined.csv",
+        "rows": 254017,
+        "synthetic_rows": 254017,
+        "real_rows": 0,
+        "start_date": "2018-01-01 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "M30": {
+        "filepath": "data/forex/combined\\EURUSD_M30_combined.csv",
+        "rows": 127009,
+        "synthetic_rows": 127009,
+        "real_rows": 0,
+        "start_date": "2018-01-01 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "H1": {
+        "filepath": "data/forex/combined\\EURUSD_H1_combined.csv",
+        "rows": 24023,
+        "synthetic_rows": 12018,
+        "real_rows": 12005,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "H4": {
+        "filepath": "data/forex/combined\\EURUSD_H4_combined.csv",
+        "rows": 6918,
+        "synthetic_rows": 3702,
+        "real_rows": 3216,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "D1": {
+        "filepath": "data/forex/combined\\EURUSD_D1_combined.csv",
+        "rows": 2104,
+        "synthetic_rows": 1108,
+        "real_rows": 996,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      }
+    },
+    "GBPUSD": {
+      "M5": {
+        "filepath": "data/forex/combined\\GBPUSD_M5_combined.csv",
+        "rows": 762049,
+        "synthetic_rows": 762049,
+        "real_rows": 0,
+        "start_date": "2018-01-01 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "M15": {
+        "filepath": "data/forex/combined\\GBPUSD_M15_combined.csv",
+        "rows": 254017,
+        "synthetic_rows": 254017,
+        "real_rows": 0,
+        "start_date": "2018-01-01 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "M30": {
+        "filepath": "data/forex/combined\\GBPUSD_M30_combined.csv",
+        "rows": 127009,
+        "synthetic_rows": 127009,
+        "real_rows": 0,
+        "start_date": "2018-01-01 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "H1": {
+        "filepath": "data/forex/combined\\GBPUSD_H1_combined.csv",
+        "rows": 24093,
+        "synthetic_rows": 12195,
+        "real_rows": 11898,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "H4": {
+        "filepath": "data/forex/combined\\GBPUSD_H4_combined.csv",
+        "rows": 6987,
+        "synthetic_rows": 3665,
+        "real_rows": 3322,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "D1": {
+        "filepath": "data/forex/combined\\GBPUSD_D1_combined.csv",
+        "rows": 2104,
+        "synthetic_rows": 1108,
+        "real_rows": 996,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      }
+    },
+    "USDJPY": {
+      "M5": {
+        "filepath": "data/forex/combined\\USDJPY_M5_combined.csv",
+        "rows": 762049,
+        "synthetic_rows": 762049,
+        "real_rows": 0,
+        "start_date": "2018-01-01 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "M15": {
+        "filepath": "data/forex/combined\\USDJPY_M15_combined.csv",
+        "rows": 254017,
+        "synthetic_rows": 254017,
+        "real_rows": 0,
+        "start_date": "2018-01-01 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "M30": {
+        "filepath": "data/forex/combined\\USDJPY_M30_combined.csv",
+        "rows": 127009,
+        "synthetic_rows": 127009,
+        "real_rows": 0,
+        "start_date": "2018-01-01 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "H1": {
+        "filepath": "data/forex/combined\\USDJPY_H1_combined.csv",
+        "rows": 24023,
+        "synthetic_rows": 12018,
+        "real_rows": 12005,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "H4": {
+        "filepath": "data/forex/combined\\USDJPY_H4_combined.csv",
+        "rows": 6918,
+        "synthetic_rows": 3702,
+        "real_rows": 3216,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      },
+      "D1": {
+        "filepath": "data/forex/combined\\USDJPY_D1_combined.csv",
+        "rows": 2104,
+        "synthetic_rows": 1108,
+        "real_rows": 996,
+        "start_date": "2018-07-03 00:00:00",
+        "end_date": "2025-03-31 00:00:00",
+        "success": true
+      }
+    }
+  },
+  "statistics": {
+    "total_files_created": 18,
+    "total_data_rows": 3528499,
+    "enhanced_files_with_real_data": 9,
+    "synthetic_only_files": 9,
+    "failed_combinations": 0,
+    "success_rate": "100.0%"
+  }
+}
