@@ -77,67 +77,164 @@ def download_yahoo_fx_data(symbol, start_date="2018-01-01", end_date="2025-03-31
         return None
 
 
-def download_mt5_fx_data(symbol, start_date="2018-01-01", end_date="2025-03-31"):
-    """Download forex data from MT5"""
+def download_mt5_fx_data(symbol, timeframe='H1', start_date="2018-01-01", end_date="2025-03-31"):
+    """Download data from MetaTrader 5 for specified timeframe"""
     if not MT5_AVAILABLE:
         return None
 
-    try:
-        print(f"📊 Attempting MT5 download for {symbol}...")
+    print(f"📊 Attempting MT5 download: {symbol} {timeframe} ({start_date} to {end_date})")
 
+    try:
+        # Initialize MT5
         if not mt5.initialize():
-            print("❌ MT5 initialization failed")
+            print(f"❌ MT5 initialization failed")
             return None
 
-        # Convert dates
+        # Timeframe mapping
+        timeframe_map = {
+            'M5': mt5.TIMEFRAME_M5,
+            'M15': mt5.TIMEFRAME_M15,
+            'M30': mt5.TIMEFRAME_M30,
+            'H1': mt5.TIMEFRAME_H1,
+            'H4': mt5.TIMEFRAME_H4,
+            'D1': mt5.TIMEFRAME_D1,
+        }
+
+        if timeframe not in timeframe_map:
+            print(f"❌ Unsupported timeframe: {timeframe}")
+            return None
+
+        tf = timeframe_map[timeframe]
+
+        # Convert dates to datetime
         start_dt = pd.to_datetime(start_date)
         end_dt = pd.to_datetime(end_date)
 
         # Get data
-        rates = mt5.copy_rates_range(symbol, mt5.TIMEFRAME_H1, start_dt, end_dt)
+        rates = mt5.copy_rates_range(symbol, tf, start_dt, end_dt)
 
         if rates is None or len(rates) == 0:
-            print(f"❌ No MT5 data for {symbol}")
+            print(f"❌ No {symbol} {timeframe} data returned from MT5")
             return None
 
         # Convert to DataFrame
         df = pd.DataFrame(rates)
-        df["time"] = pd.to_datetime(df["time"], unit="s")
-        df.set_index("time", inplace=True)
+        df['time'] = pd.to_datetime(df['time'], unit='s')
+        df.set_index('time', inplace=True)
 
-        # Clean columns
-        df.columns = [
-            "open",
-            "high",
-            "low",
-            "close",
-            "tick_volume",
-            "spread",
-            "real_volume",
-        ]
-        df = df[["open", "high", "low", "close", "tick_volume"]].copy()
-        df.rename(columns={"tick_volume": "volume"}, inplace=True)
+        # Filter by date range to ensure we're within bounds
+        df = df[(df.index >= start_dt) & (df.index <= end_dt)]
 
-        print(f"✅ Downloaded {len(df):,} {symbol} MT5 data points")
+        # Keep only OHLCV columns
+        df = df[['open', 'high', 'low', 'close', 'tick_volume']].copy()
+        df.rename(columns={'tick_volume': 'volume'}, inplace=True)
+
+        print(f"✅ Downloaded {len(df):,} {symbol} {timeframe} MT5 data points")
         return df
 
     except Exception as e:
-        print(f"❌ MT5 download failed for {symbol}: {e}")
+        print(f"❌ MT5 download failed for {symbol} {timeframe}: {e}")
         return None
     finally:
         if MT5_AVAILABLE:
             mt5.shutdown()
 
 
-def generate_synthetic_fx_data(symbol, start_date="2018-01-01", end_date="2025-03-31"):
-    """Generate realistic synthetic forex data"""
-    print(f"🎲 Generating synthetic {symbol} data...")
+def download_currency_pair(symbol, timeframe='H1'):
+    """Download data for a single currency pair and timeframe with fallbacks"""
+    print(f"\n📊 DOWNLOADING {symbol} {timeframe} DATA")
+    print(f"{'='*40}")
 
-    # Date range
-    dates = pd.date_range(start=start_date, end=end_date, freq="1H")
+    # Try MT5 first
+    data = download_mt5_fx_data(symbol, timeframe)
+    if data is not None and len(data) > 1000:
+        data["source"] = "MT5"
+        data["timeframe"] = timeframe
+        return data
+
+    # For non-H1 timeframes, try to resample from H1 if Yahoo Finance
+    if timeframe != 'H1':
+        print(f"⏬ Trying to get {symbol} H1 data for resampling...")
+        h1_data = download_yahoo_fx_data(symbol)
+        if h1_data is not None and len(h1_data) > 1000:
+            resampled = resample_to_timeframe(h1_data, timeframe)
+            if resampled is not None:
+                resampled["source"] = "YahooFinance_Resampled"
+                resampled["timeframe"] = timeframe
+                return resampled
+    else:
+        # Try Yahoo Finance for H1
+        data = download_yahoo_fx_data(symbol)
+        if data is not None and len(data) > 1000:
+            data["source"] = "YahooFinance"
+            data["timeframe"] = timeframe
+            return data
+
+    # Generate synthetic as last resort
+    data = generate_synthetic_fx_data(symbol, timeframe)
+    data["source"] = "Synthetic"
+    data["timeframe"] = timeframe
+    return data
+
+
+def resample_to_timeframe(df, target_timeframe):
+    """Resample hourly data to target timeframe"""
+    try:
+        timeframe_rules = {
+            'M5': '5T',    # 5 minutes
+            'M15': '15T',  # 15 minutes  
+            'M30': '30T',  # 30 minutes
+            'H1': '1H',    # 1 hour
+            'H4': '4H',    # 4 hours
+            'D1': '1D',    # 1 day
+        }
+        
+        if target_timeframe not in timeframe_rules:
+            return None
+            
+        rule = timeframe_rules[target_timeframe]
+        
+        # For upsampling (M5, M15, M30), we can't create more granular data
+        if target_timeframe in ['M5', 'M15', 'M30']:
+            print(f"⚠️ Cannot upsample to {target_timeframe} from H1 data")
+            return None
+        
+        # Resample OHLC data
+        resampled = df.resample(rule).agg({
+            'open': 'first',
+            'high': 'max', 
+            'low': 'min',
+            'close': 'last',
+            'volume': 'sum'
+        }).dropna()
+        
+        print(f"✅ Resampled to {target_timeframe}: {len(resampled):,} samples")
+        return resampled
+        
+    except Exception as e:
+        print(f"❌ Resampling failed: {e}")
+        return None
+
+
+def generate_synthetic_fx_data(symbol, timeframe='H1', start_date="2018-01-01", end_date="2025-03-31"):
+    """Generate realistic synthetic forex data for specified timeframe"""
+    print(f"🎲 Generating synthetic {symbol} {timeframe} data...")
+
+    # Timeframe frequency mapping
+    freq_map = {
+        'M5': '5T',
+        'M15': '15T', 
+        'M30': '30T',
+        'H1': '1H',
+        'H4': '4H',
+        'D1': '1D'
+    }
+    
+    freq = freq_map.get(timeframe, '1H')
+    dates = pd.date_range(start=start_date, end=end_date, freq=freq)
     n_samples = len(dates)
 
-    # Currency-specific parameters
+    # Currency-specific parameters (adjusted by timeframe)
     params = {
         "EURUSD": {"base_price": 1.1000, "volatility": 0.0003, "trend": 0.10},
         "GBPUSD": {"base_price": 1.2500, "volatility": 0.0004, "trend": -0.05},
@@ -145,8 +242,16 @@ def generate_synthetic_fx_data(symbol, start_date="2018-01-01", end_date="2025-0
     }
 
     param = params.get(symbol, params["EURUSD"])
+    
+    # Adjust volatility by timeframe
+    vol_multiplier = {
+        'M5': 0.3, 'M15': 0.5, 'M30': 0.7, 
+        'H1': 1.0, 'H4': 1.8, 'D1': 3.0
+    }
+    
+    base_vol = param["volatility"] * vol_multiplier.get(timeframe, 1.0)
 
-    np.random.seed(hash(symbol) % 1000)  # Different seed per currency
+    np.random.seed(hash(f"{symbol}_{timeframe}") % 1000)
 
     # Generate regime-based returns
     regimes = np.random.choice([0, 1, 2], n_samples, p=[0.6, 0.25, 0.15])
@@ -157,7 +262,6 @@ def generate_synthetic_fx_data(symbol, start_date="2018-01-01", end_date="2025-0
             regimes[i] = regimes[i - 1]
 
     returns = np.zeros(n_samples)
-    base_vol = param["volatility"]
 
     for i in range(n_samples):
         if regimes[i] == 0:  # Normal
@@ -184,7 +288,7 @@ def generate_synthetic_fx_data(symbol, start_date="2018-01-01", end_date="2025-0
         np.cumsum(returns) + (trend_component + cycle_component) * 0.1
     )
 
-    # Create OHLC data
+    # Create OHLC data with timeframe-adjusted spread
     noise = np.random.normal(0, base_vol * 0.1, n_samples)
     spread = np.random.normal(0, base_vol * 0.3, n_samples)
 
@@ -194,7 +298,7 @@ def generate_synthetic_fx_data(symbol, start_date="2018-01-01", end_date="2025-0
             "high": prices + np.abs(spread) + np.abs(noise),
             "low": prices - np.abs(spread) - np.abs(noise),
             "close": prices,
-            "volume": np.random.lognormal(10, 0.5, n_samples),
+            "volume": np.random.lognormal(8 + np.log(vol_multiplier.get(timeframe, 1.0)), 0.5, n_samples),
         },
         index=dates,
     )
@@ -203,41 +307,18 @@ def generate_synthetic_fx_data(symbol, start_date="2018-01-01", end_date="2025-0
     data["high"] = np.maximum(data["high"], np.maximum(data["open"], data["close"]))
     data["low"] = np.minimum(data["low"], np.minimum(data["open"], data["close"]))
 
-    print(f"✅ Generated {len(data):,} {symbol} synthetic data points")
-    return data
-
-
-def download_currency_pair(symbol):
-    """Download data for a single currency pair with fallbacks"""
-    print(f"\n{'='*50}")
-    print(f"📊 DOWNLOADING {symbol} DATA")
-    print(f"{'='*50}")
-
-    # Try MT5 first
-    data = download_mt5_fx_data(symbol)
-    if data is not None and len(data) > 1000:
-        data["source"] = "MT5"
-        return data
-
-    # Try Yahoo Finance
-    data = download_yahoo_fx_data(symbol)
-    if data is not None and len(data) > 1000:
-        data["source"] = "YahooFinance"
-        return data
-
-    # Generate synthetic as last resort
-    data = generate_synthetic_fx_data(symbol)
-    data["source"] = "Synthetic"
+    print(f"✅ Generated {len(data):,} {symbol} {timeframe} synthetic data points")
     return data
 
 
 def main():
-    """Download multi-currency forex data"""
-    print("🚀 MULTI-CURRENCY FOREX DATA DOWNLOADER")
-    print("=" * 60)
+    """Download multi-currency, multi-timeframe forex data"""
+    print("🚀 MULTI-CURRENCY MULTI-TIMEFRAME FOREX DATA DOWNLOADER")
+    print("=" * 70)
 
-    # Currency pairs to download
+    # Currency pairs and timeframes
     currency_pairs = ["EURUSD", "GBPUSD", "USDJPY"]
+    timeframes = ["M5", "M15", "M30", "H1", "H4", "D1"]
 
     # Create data directory
     data_dir = "data/forex"
@@ -245,69 +326,81 @@ def main():
 
     download_summary = {}
 
-    # Download each currency pair
+    # Download each currency pair and timeframe
     for symbol in currency_pairs:
-        try:
-            data = download_currency_pair(symbol)
+        download_summary[symbol] = {}
+        
+        for timeframe in timeframes:
+            try:
+                data = download_currency_pair(symbol, timeframe)
 
-            if data is not None:
-                # Save to CSV
-                filename = f"{data_dir}/{symbol}_2018_2025.csv"
-                data.to_csv(filename)
+                if data is not None:
+                    # Save to CSV
+                    filename = f"{data_dir}/{symbol}_{timeframe}_2018_2025.csv"
+                    data.to_csv(filename)
 
-                download_summary[symbol] = {
-                    "status": "SUCCESS",
-                    "source": data["source"].iloc[0]
-                    if "source" in data.columns
-                    else "Unknown",
-                    "samples": len(data),
-                    "date_range": f"{data.index.min()} to {data.index.max()}",
-                    "file": filename,
-                }
+                    download_summary[symbol][timeframe] = {
+                        "status": "SUCCESS",
+                        "source": data["source"].iloc[0] if "source" in data.columns else "Unknown",
+                        "samples": len(data),
+                        "date_range": f"{data.index.min()} to {data.index.max()}",
+                        "file": filename,
+                    }
 
-                print(f"💾 Saved {symbol} data to: {filename}")
+                    print(f"💾 Saved {symbol} {timeframe} data to: {filename}")
 
-            else:
-                download_summary[symbol] = {
-                    "status": "FAILED",
-                    "source": "None",
+                else:
+                    download_summary[symbol][timeframe] = {
+                        "status": "FAILED",
+                        "source": "None",
+                        "samples": 0,
+                        "date_range": "N/A", 
+                        "file": "N/A",
+                    }
+
+            except Exception as e:
+                print(f"❌ Error downloading {symbol} {timeframe}: {e}")
+                download_summary[symbol][timeframe] = {
+                    "status": "ERROR",
+                    "source": "Error",
                     "samples": 0,
-                    "date_range": "N/A",
+                    "date_range": str(e),
                     "file": "N/A",
                 }
 
-        except Exception as e:
-            print(f"❌ Error downloading {symbol}: {e}")
-            download_summary[symbol] = {
-                "status": "ERROR",
-                "source": "Error",
-                "samples": 0,
-                "date_range": str(e),
-                "file": "N/A",
-            }
+    # Print comprehensive summary
+    print(f"\n{'='*70}")
+    print("📊 MULTI-TIMEFRAME DOWNLOAD SUMMARY")
+    print(f"{'='*70}")
 
-    # Print summary
-    print(f"\n{'='*60}")
-    print("📊 DOWNLOAD SUMMARY")
-    print(f"{'='*60}")
+    total_files = 0
+    total_samples = 0
 
-    for symbol, info in download_summary.items():
+    for symbol in currency_pairs:
         print(f"\n🔹 {symbol}:")
-        print(f"   Status: {info['status']}")
-        print(f"   Source: {info['source']}")
-        print(f"   Samples: {info['samples']:,}")
-        print(f"   Range: {info['date_range']}")
-        print(f"   File: {info['file']}")
+        for timeframe in timeframes:
+            info = download_summary[symbol][timeframe]
+            status_icon = "✅" if info['status'] == "SUCCESS" else "❌"
+            print(f"   {status_icon} {timeframe}: {info['samples']:,} samples ({info['source']})")
+            
+            if info['status'] == "SUCCESS":
+                total_files += 1
+                total_samples += info['samples']
 
-    # Save summary to JSON
+    print(f"\n{'='*70}")
+    print(f"📈 TOTAL: {total_files} files, {total_samples:,} total samples")
+    print(f"🎯 Coverage: {len(currency_pairs)} currencies × {len(timeframes)} timeframes")
+    print(f"{'='*70}")
+
+    # Save detailed summary to JSON
     import json
 
-    summary_file = f"{data_dir}/download_summary.json"
+    summary_file = f"{data_dir}/multi_timeframe_summary.json"
     with open(summary_file, "w") as f:
         json.dump(download_summary, f, indent=2, default=str)
 
-    print(f"\n💾 Summary saved to: {summary_file}")
-    print(f"\n✅ Data download complete! Files ready for GitHub commit.")
+    print(f"\n💾 Detailed summary saved to: {summary_file}")
+    print(f"\n✅ Multi-timeframe data download complete! Ready for robust model training.")
 
     return download_summary
 

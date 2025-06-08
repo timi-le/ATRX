@@ -482,32 +482,214 @@ def load_predownloaded_data(symbol="EURUSD"):
         return None
 
 
-def load_multi_currency_data(symbols=["EURUSD", "GBPUSD", "USDJPY"]):
-    """Load data for multiple currency pairs"""
-    print(f"🌍 Loading multi-currency data: {symbols}")
-
+def load_multi_currency_data(currency_pairs=['EURUSD', 'GBPUSD', 'USDJPY'], timeframes=['H1'], data_dir='data/forex'):
+    """
+    Load multi-currency, multi-timeframe data with flexible timeframe selection
+    
+    Args:
+        currency_pairs: List of currency pairs to load
+        timeframes: List of timeframes to load ('M5', 'M15', 'M30', 'H1', 'H4', 'D1')
+        data_dir: Directory containing the forex data files
+    
+    Returns:
+        Dictionary with structure: {currency: {timeframe: dataframe}}
+    """
+    print(f"📊 Loading multi-timeframe data for {len(currency_pairs)} currencies, {len(timeframes)} timeframes")
+    
     all_data = {}
-
-    for symbol in symbols:
-        print(f"\n{'='*40}")
-        print(f"📊 LOADING {symbol} DATA")
-        print(f"{'='*40}")
-
-        # Try pre-downloaded data first
-        data = load_predownloaded_data(symbol)
-
-        # Fallback to live download if needed
-        if data is None:
-            print(f"🔄 Falling back to live download for {symbol}...")
-            data = generate_professional_forex_data(symbol, "H1")
-
-        if data is not None and len(data) > 1000:
-            all_data[symbol] = data
-            print(f"✅ {symbol} data loaded successfully: {len(data):,} samples")
-        else:
-            print(f"❌ Failed to load {symbol} data")
-
+    total_samples = 0
+    
+    for symbol in currency_pairs:
+        all_data[symbol] = {}
+        
+        for timeframe in timeframes:
+            print(f"📈 Loading {symbol} {timeframe} data...")
+            
+            # Try to load pre-downloaded data from GitHub first
+            try:
+                filename = f"{data_dir}/{symbol}_{timeframe}_2018_2025.csv"
+                
+                if os.path.exists(filename):
+                    data = pd.read_csv(filename, index_col=0, parse_dates=True)
+                    
+                    # Ensure we have the required columns
+                    required_cols = ['open', 'high', 'low', 'close', 'volume']
+                    if all(col in data.columns for col in required_cols):
+                        all_data[symbol][timeframe] = data[required_cols].copy()
+                        samples = len(data)
+                        total_samples += samples
+                        print(f"✅ Loaded {symbol} {timeframe}: {samples:,} samples from GitHub data")
+                        continue
+                    else:
+                        print(f"⚠️ Missing required columns in {filename}")
+                        
+                else:
+                    print(f"⚠️ File not found: {filename}")
+                    
+            except Exception as e:
+                print(f"❌ Error loading {filename}: {e}")
+            
+            # Fallback to live download/synthetic generation
+            print(f"🔄 Falling back to live data download for {symbol} {timeframe}...")
+            fallback_data = get_fallback_data(symbol, timeframe)
+            
+            if fallback_data is not None and len(fallback_data) > 100:
+                all_data[symbol][timeframe] = fallback_data
+                samples = len(fallback_data)
+                total_samples += samples
+                print(f"✅ Generated {symbol} {timeframe}: {samples:,} samples (fallback)")
+            else:
+                print(f"❌ Failed to get {symbol} {timeframe} data")
+                
+    print(f"\n📊 MULTI-TIMEFRAME DATA SUMMARY:")
+    print(f"🎯 Total samples loaded: {total_samples:,}")
+    print(f"🎯 Currencies: {len(all_data)}")
+    
+    for symbol in all_data:
+        print(f"   🔹 {symbol}: {list(all_data[symbol].keys())} timeframes")
+        for tf in all_data[symbol]:
+            print(f"      - {tf}: {len(all_data[symbol][tf]):,} samples")
+    
     return all_data
+
+
+def get_fallback_data(symbol, timeframe, start_date='2018-01-01', end_date='2025-03-31'):
+    """Generate fallback data when pre-downloaded files aren't available"""
+    
+    # Try MT5 first if available
+    if MT5_AVAILABLE:
+        try:
+            data = get_mt5_data(symbol, timeframe, start_date, end_date)
+            if data is not None and len(data) > 100:
+                return data[['open', 'high', 'low', 'close', 'volume']].copy()
+        except Exception as e:
+            print(f"⚠️ MT5 fallback failed for {symbol} {timeframe}: {e}")
+    
+    # Try Yahoo Finance for H1 and resample if needed
+    try:
+        if timeframe == 'H1':
+            data = get_yahoo_data(symbol, start_date, end_date)
+            if data is not None and len(data) > 100:
+                return data[['open', 'high', 'low', 'close', 'volume']].copy()
+        elif timeframe in ['H4', 'D1']:
+            # Try to get H1 and resample up
+            h1_data = get_yahoo_data(symbol, start_date, end_date)
+            if h1_data is not None:
+                return resample_timeframe_data(h1_data, timeframe)
+    except Exception as e:
+        print(f"⚠️ Yahoo Finance fallback failed for {symbol} {timeframe}: {e}")
+    
+    # Generate sophisticated synthetic data as last resort
+    return generate_advanced_synthetic_data(symbol, timeframe, start_date, end_date)
+
+
+def resample_timeframe_data(df, target_timeframe):
+    """Resample data to target timeframe"""
+    timeframe_rules = {
+        'M5': '5T', 'M15': '15T', 'M30': '30T',
+        'H1': '1H', 'H4': '4H', 'D1': '1D'
+    }
+    
+    if target_timeframe not in timeframe_rules:
+        return None
+        
+    rule = timeframe_rules[target_timeframe]
+    
+    try:
+        resampled = df.resample(rule).agg({
+            'open': 'first',
+            'high': 'max',
+            'low': 'min', 
+            'close': 'last',
+            'volume': 'sum'
+        }).dropna()
+        
+        return resampled
+    except Exception as e:
+        print(f"⚠️ Resampling failed: {e}")
+        return None
+
+
+def generate_advanced_synthetic_data(symbol, timeframe, start_date='2018-01-01', end_date='2025-03-31'):
+    """Generate sophisticated synthetic forex data"""
+    
+    # Timeframe frequency mapping
+    freq_map = {
+        'M5': '5T', 'M15': '15T', 'M30': '30T',
+        'H1': '1H', 'H4': '4H', 'D1': '1D'
+    }
+    
+    freq = freq_map.get(timeframe, '1H')
+    dates = pd.date_range(start=start_date, end=end_date, freq=freq)
+    n_samples = len(dates)
+
+    # Currency-specific parameters
+    params = {
+        "EURUSD": {"base_price": 1.1000, "volatility": 0.0003, "trend": 0.10},
+        "GBPUSD": {"base_price": 1.2500, "volatility": 0.0004, "trend": -0.05},
+        "USDJPY": {"base_price": 110.00, "volatility": 0.0003, "trend": 0.15},
+    }
+
+    param = params.get(symbol, params["EURUSD"])
+    
+    # Adjust volatility by timeframe
+    vol_multiplier = {
+        'M5': 0.3, 'M15': 0.5, 'M30': 0.7,
+        'H1': 1.0, 'H4': 1.8, 'D1': 3.0
+    }
+    
+    base_vol = param["volatility"] * vol_multiplier.get(timeframe, 1.0)
+    np.random.seed(hash(f"{symbol}_{timeframe}") % 1000)
+
+    # Generate regime-based market data
+    regimes = np.random.choice([0, 1, 2], n_samples, p=[0.6, 0.25, 0.15])
+    
+    # Add regime persistence
+    for i in range(1, n_samples):
+        if np.random.random() < 0.85:
+            regimes[i] = regimes[i - 1]
+
+    returns = np.zeros(n_samples)
+
+    for i in range(n_samples):
+        if regimes[i] == 0:  # Normal regime
+            returns[i] = np.random.normal(0, base_vol)
+        elif regimes[i] == 1:  # Trending regime
+            momentum = base_vol * 0.5 if i > 0 and returns[i - 1] > 0 else -base_vol * 0.5
+            returns[i] = np.random.normal(momentum, base_vol * 0.7)
+        else:  # Volatile regime
+            returns[i] = np.random.normal(0, base_vol * 3)
+
+    # Add volatility clustering
+    for i in range(1, n_samples):
+        if abs(returns[i - 1]) > base_vol * 2:
+            returns[i] *= 1.4
+
+    # Generate realistic price series
+    trend_component = np.linspace(0, param["trend"], n_samples)
+    cycle_component = 0.03 * np.sin(np.linspace(0, 12 * np.pi, n_samples))
+    
+    prices = param["base_price"] * np.exp(
+        np.cumsum(returns) + (trend_component + cycle_component) * 0.1
+    )
+
+    # Create OHLC data
+    noise = np.random.normal(0, base_vol * 0.1, n_samples)
+    spread = np.random.normal(0, base_vol * 0.3, n_samples)
+
+    data = pd.DataFrame({
+        "open": prices + noise,
+        "high": prices + np.abs(spread) + np.abs(noise),
+        "low": prices - np.abs(spread) - np.abs(noise),
+        "close": prices,
+        "volume": np.random.lognormal(8 + np.log(vol_multiplier.get(timeframe, 1.0)), 0.5, n_samples),
+    }, index=dates)
+
+    # Ensure OHLC relationships
+    data["high"] = np.maximum(data["high"], np.maximum(data["open"], data["close"]))
+    data["low"] = np.minimum(data["low"], np.minimum(data["open"], data["close"]))
+
+    return data
 
 
 def combine_multi_currency_features(all_data):
@@ -860,147 +1042,196 @@ def train_advanced_cnn(X_train, y_train, X_test, y_test, models_dir, time_steps=
 
 # === MAIN EXECUTION ===
 if __name__ == "__main__":
-    print(
-        "🚀 Starting Professional Multi-Currency Econophysics-Inspired FX Model Training"
-    )
-    print("=" * 80)
-
-    MODELS_DIR = "/content/drive/MyDrive/FX_Models"
+    print("🚀 Starting Professional Multi-Currency Multi-Timeframe Econophysics-Inspired FX Model Training")
+    print("="*80)
+    
+    MODELS_DIR = '/content/drive/MyDrive/FX_Models'
     os.makedirs(MODELS_DIR, exist_ok=True)
-
-    # Currency pairs to train on
-    CURRENCY_PAIRS = ["EURUSD", "GBPUSD", "USDJPY"]
-
-    # 1. Multi-Currency Data Loading
-    print("\n📊 PHASE 1: Multi-Currency Data Acquisition")
-    all_currency_data = load_multi_currency_data(CURRENCY_PAIRS)
-
+    
+    # Configuration for multi-timeframe training
+    CURRENCY_PAIRS = ['EURUSD', 'GBPUSD', 'USDJPY']
+    
+    # Timeframe configurations for different training approaches
+    TIMEFRAME_CONFIGS = {
+        'quick_test': ['H1'],                            # Fast testing
+        'balanced': ['H1', 'H4'],                        # Balanced approach
+        'comprehensive': ['M30', 'H1', 'H4', 'D1'],      # Comprehensive training
+        'maximum': ['M5', 'M15', 'M30', 'H1', 'H4', 'D1'] # Maximum data utilization
+    }
+    
+    # Select training configuration (modify as needed)
+    TRAINING_MODE = 'comprehensive'  # Change to 'maximum' for full multi-timeframe training
+    SELECTED_TIMEFRAMES = TIMEFRAME_CONFIGS[TRAINING_MODE]
+    
+    print(f"🎯 Training Mode: {TRAINING_MODE.upper()}")
+    print(f"🎯 Selected Timeframes: {SELECTED_TIMEFRAMES}")
+    print(f"🎯 Currency Pairs: {CURRENCY_PAIRS}")
+    
+    # 1. Multi-Currency Multi-Timeframe Data Loading
+    print(f"\n📊 PHASE 1: Multi-Currency Multi-Timeframe Data Acquisition")
+    all_currency_data = load_multi_currency_data(
+        currency_pairs=CURRENCY_PAIRS,
+        timeframes=SELECTED_TIMEFRAMES
+    )
+    
     if not all_currency_data:
         print("❌ No currency data loaded! Exiting...")
         exit(1)
-
-    print(f"\n✅ Successfully loaded {len(all_currency_data)} currency pairs:")
-    for symbol, data in all_currency_data.items():
-        print(
-            f"   📈 {symbol}: {len(data):,} samples ({data.index.min()} to {data.index.max()})"
-        )
-
-    # 2. Multi-Currency Feature Engineering & Combination
-    print("\n🔬 PHASE 2: Multi-Currency Econophysics Feature Engineering")
-    combined_features, combined_labels = combine_multi_currency_features(
-        all_currency_data
-    )
-
-    # 3. Data Preparation
-    print("\n⚙️ PHASE 3: Multi-Currency Data Preprocessing")
-
-    X = combined_features.values
-    y = combined_labels.values
-
-    # Fix the np.bincount error by ensuring y is proper integer array
-    y = y.astype(int)
-    y = y[~np.isnan(y)]  # Remove any NaN values
-    X = X[: len(y)]  # Ensure X and y have same length
-
-    print(f"📈 Combined dataset shape: {X.shape}")
-    print(f"🎯 Total features: {combined_features.shape[1]}")
-    print(f"📊 Label distribution: {np.bincount(y)}")
-    print(f"🌍 Currency pairs: {list(all_currency_data.keys())}")
-
-    # Time series split
-    tscv = TimeSeriesSplit(n_splits=5)
-    train_idx, test_idx = list(tscv.split(X))[-1]
-
-    X_train, X_test = X[train_idx], X[test_idx]
-    y_train, y_test = y[train_idx], y[test_idx]
-
-    # Professional scaling
-    scaler = RobustScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
-
-    # Save scaler for future use
-    scaler_path = os.path.join(MODELS_DIR, "multi_currency_scaler.pkl")
-    with open(scaler_path, "wb") as f:
-        pickle.dump(scaler, f)
-    print(f"💾 Scaler saved to: {scaler_path}")
-
-    # 4. Advanced Model Training
-    print("\n🤖 PHASE 4: Advanced Multi-Currency Model Training")
-
-    feature_names = list(combined_features.columns)
-
-    xgb_acc, feature_importance = train_advanced_xgboost(
-        X_train_scaled, y_train, X_test_scaled, y_test, feature_names, MODELS_DIR
-    )
-
-    lstm_acc = train_professional_lstm(
-        X_train_scaled, y_train, X_test_scaled, y_test, MODELS_DIR
-    )
-
-    cnn_acc = train_advanced_cnn(
-        X_train_scaled, y_train, X_test_scaled, y_test, MODELS_DIR
-    )
-
-    # 5. Multi-Currency Feature Analysis
-    print("\n📊 PHASE 5: Multi-Currency Feature Analysis")
-
-    # Analyze feature importance by currency
-    currency_importance = {}
+    
+    # Verify all currencies have data for all selected timeframes
+    valid_data = {}
     for currency in CURRENCY_PAIRS:
-        currency_features = [f for f in feature_names if f.startswith(f"{currency}_")]
-        currency_imp = feature_importance[
-            feature_importance["feature"].isin(currency_features)
-        ]["importance"].sum()
-        currency_importance[currency] = currency_imp
-        print(f"🔍 {currency} total importance: {currency_imp:.4f}")
-
-    # Save comprehensive training metadata
-    training_metadata = {
-        "currency_pairs": CURRENCY_PAIRS,
-        "training_date": datetime.now().isoformat(),
-        "data_samples": {
-            symbol: len(data) for symbol, data in all_currency_data.items()
-        },
-        "combined_features": len(feature_names),
-        "training_samples": len(X_train),
-        "test_samples": len(X_test),
-        "model_performance": {"xgboost": xgb_acc, "lstm": lstm_acc, "cnn": cnn_acc},
-        "currency_importance": currency_importance,
-        "feature_names": feature_names,
-    }
-
-    metadata_path = os.path.join(MODELS_DIR, "training_metadata.pkl")
-    with open(metadata_path, "wb") as f:
-        pickle.dump(training_metadata, f)
-
-    # 6. Results Summary
-    print("\n" + "=" * 80)
-    print("🎉 PROFESSIONAL MULTI-CURRENCY ECONOPHYSICS TRAINING COMPLETE!")
-    print("=" * 80)
-    print(f"📁 Models saved to: {MODELS_DIR}")
-    print(f"🌍 Currency pairs trained: {', '.join(CURRENCY_PAIRS)}")
-    print(f"📊 Training samples: {len(X_train):,}")
-    print(f"🧪 Test samples: {len(X_test):,}")
-    print(f"🔍 Total features: {len(feature_names):,}")
-
-    print("\n🏆 PERFORMANCE SUMMARY:")
-    print(f"  🌲 Advanced XGBoost: {xgb_acc:.4f}")
-    print(f"  🧠 Professional LSTM: {lstm_acc:.4f}")
-    print(f"  🌊 Advanced CNN: {cnn_acc:.4f}")
-
-    best_model = max(
-        [("XGBoost", xgb_acc), ("LSTM", lstm_acc), ("CNN", cnn_acc)], key=lambda x: x[1]
-    )
-    print(f"\n🥇 Best performing model: {best_model[0]} ({best_model[1]:.4f})")
-
-    print("\n📊 CURRENCY IMPORTANCE RANKING:")
-    sorted_currencies = sorted(
-        currency_importance.items(), key=lambda x: x[1], reverse=True
-    )
-    for i, (currency, importance) in enumerate(sorted_currencies, 1):
-        print(f"  {i}. {currency}: {importance:.4f}")
-
-    print(f"\n💾 Training metadata saved to: {metadata_path}")
-    print("\n✅ Ready for professional multi-currency FX trading deployment!")
-    print("=" * 80)
+        if currency in all_currency_data:
+            valid_data[currency] = {}
+            for timeframe in SELECTED_TIMEFRAMES:
+                if timeframe in all_currency_data[currency]:
+                    if len(all_currency_data[currency][timeframe]) > 1000:
+                        valid_data[currency][timeframe] = all_currency_data[currency][timeframe]
+                        print(f"✅ {currency} {timeframe}: {len(all_currency_data[currency][timeframe]):,} samples")
+                    else:
+                        print(f"⚠️ {currency} {timeframe}: Insufficient data ({len(all_currency_data[currency][timeframe])} samples)")
+                else:
+                    print(f"❌ {currency} {timeframe}: Missing timeframe data")
+    
+    if not valid_data:
+        print("❌ No valid multi-timeframe data! Exiting...")
+        exit(1)
+    
+    print(f"\n✅ Successfully validated multi-timeframe data:")
+    total_samples = 0
+    for currency in valid_data:
+        for timeframe in valid_data[currency]:
+            samples = len(valid_data[currency][timeframe])
+            total_samples += samples
+            print(f"   📊 {currency} {timeframe}: {samples:,} samples")
+    
+    print(f"\n🎯 TOTAL DATASET: {total_samples:,} samples across all currencies and timeframes")
+    
+    # 2. Train models for each currency-timeframe combination
+    print(f"\n🧠 PHASE 2: Multi-Timeframe Model Training")
+    
+    all_results = {}
+    
+    for currency in valid_data:
+        all_results[currency] = {}
+        
+        for timeframe in valid_data[currency]:
+            print(f"\n{'='*60}")
+            print(f"🎯 TRAINING {currency} {timeframe} MODELS")
+            print(f"{'='*60}")
+            
+            data = valid_data[currency][timeframe]
+            
+            # 2a. Feature Engineering with Econophysics
+            print(f"\n🔬 PHASE 2a: Econophysics Feature Engineering for {currency} {timeframe}")
+            feature_engineer = EconophysicsFeatureEngine()
+            X, y = feature_engineer.create_econophysics_features(data)
+            
+            if X is None or len(X) < 100:
+                print(f"❌ Feature engineering failed for {currency} {timeframe}")
+                continue
+            
+            print(f"✅ Features created: {X.shape[0]:,} samples, {X.shape[1]} features")
+            
+            # 2b. Train Models
+            print(f"\n🎯 PHASE 2b: Model Training for {currency} {timeframe}")
+            trainer = ProfessionalModelTrainer()
+            results = trainer.train_all_models(X, y, f"{currency}_{timeframe}")
+            
+            if results:
+                all_results[currency][timeframe] = results
+                
+                # Save models with currency and timeframe info
+                model_prefix = f"{currency}_{timeframe}"
+                for model_name, model_data in results.items():
+                    if 'model' in model_data:
+                        model_filename = f"{MODELS_DIR}/{model_prefix}_{model_name}_model.pkl"
+                        with open(model_filename, 'wb') as f:
+                            pickle.dump(model_data['model'], f)
+                        print(f"💾 Saved {model_name} model: {model_filename}")
+            else:
+                print(f"❌ Model training failed for {currency} {timeframe}")
+    
+    # 3. Comprehensive Results Analysis
+    print(f"\n📊 PHASE 3: Multi-Timeframe Results Analysis")
+    print(f"{'='*80}")
+    
+    if all_results:
+        best_performers = {}
+        
+        for currency in all_results:
+            best_performers[currency] = {}
+            
+            for timeframe in all_results[currency]:
+                timeframe_results = all_results[currency][timeframe]
+                
+                print(f"\n🔹 {currency} {timeframe} RESULTS:")
+                
+                best_accuracy = 0
+                best_model = None
+                
+                for model_name, metrics in timeframe_results.items():
+                    accuracy = metrics.get('accuracy', 0)
+                    precision = metrics.get('precision', 0)
+                    
+                    print(f"   📈 {model_name}:")
+                    print(f"      Accuracy: {accuracy:.3f}")
+                    print(f"      Precision: {precision:.3f}")
+                    
+                    if accuracy > best_accuracy:
+                        best_accuracy = accuracy
+                        best_model = model_name
+                
+                if best_model:
+                    best_performers[currency][timeframe] = {
+                        'model': best_model,
+                        'accuracy': best_accuracy
+                    }
+                    print(f"   🏆 Best Model: {best_model} (Accuracy: {best_accuracy:.3f})")
+        
+        # Overall summary
+        print(f"\n{'='*80}")
+        print(f"🏆 MULTI-TIMEFRAME TRAINING SUMMARY")
+        print(f"{'='*80}")
+        
+        total_models = 0
+        avg_accuracy = 0
+        
+        for currency in best_performers:
+            print(f"\n🔸 {currency} BEST PERFORMERS:")
+            for timeframe in best_performers[currency]:
+                info = best_performers[currency][timeframe]
+                print(f"   {timeframe}: {info['model']} (Accuracy: {info['accuracy']:.3f})")
+                total_models += 1
+                avg_accuracy += info['accuracy']
+        
+        if total_models > 0:
+            avg_accuracy /= total_models
+            print(f"\n📊 OVERALL STATISTICS:")
+            print(f"   🎯 Total Models Trained: {total_models}")
+            print(f"   📈 Average Best Accuracy: {avg_accuracy:.3f}")
+            print(f"   🎯 Training Mode Used: {TRAINING_MODE}")
+            print(f"   📊 Total Data Points: {total_samples:,}")
+        
+        # Save comprehensive results
+        results_file = f"{MODELS_DIR}/multi_timeframe_results_{TRAINING_MODE}.pkl"
+        with open(results_file, 'wb') as f:
+            pickle.dump({
+                'all_results': all_results,
+                'best_performers': best_performers,
+                'config': {
+                    'currency_pairs': CURRENCY_PAIRS,
+                    'timeframes': SELECTED_TIMEFRAMES,
+                    'training_mode': TRAINING_MODE,
+                    'total_samples': total_samples
+                }
+            }, f)
+        
+        print(f"\n💾 Comprehensive results saved to: {results_file}")
+        
+    else:
+        print("❌ No successful model training results!")
+    
+    print(f"\n{'='*80}")
+    print(f"✅ MULTI-TIMEFRAME PROFESSIONAL FX MODEL TRAINING COMPLETE!")
+    print(f"{'='*80}")

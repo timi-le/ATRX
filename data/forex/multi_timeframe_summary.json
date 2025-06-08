@@ -1,0 +1,134 @@
+{
+  "EURUSD": {
+    "M5": {
+      "status": "SUCCESS",
+      "source": "Synthetic",
+      "samples": 762049,
+      "date_range": "2018-01-01 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/EURUSD_M5_2018_2025.csv"
+    },
+    "M15": {
+      "status": "SUCCESS",
+      "source": "Synthetic",
+      "samples": 254017,
+      "date_range": "2018-01-01 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/EURUSD_M15_2018_2025.csv"
+    },
+    "M30": {
+      "status": "SUCCESS",
+      "source": "Synthetic",
+      "samples": 127009,
+      "date_range": "2018-01-01 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/EURUSD_M30_2018_2025.csv"
+    },
+    "H1": {
+      "status": "SUCCESS",
+      "source": "MT5",
+      "samples": 24023,
+      "date_range": "2018-07-03 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/EURUSD_H1_2018_2025.csv"
+    },
+    "H4": {
+      "status": "SUCCESS",
+      "source": "MT5",
+      "samples": 6918,
+      "date_range": "2018-07-03 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/EURUSD_H4_2018_2025.csv"
+    },
+    "D1": {
+      "status": "SUCCESS",
+      "source": "MT5",
+      "samples": 2104,
+      "date_range": "2018-07-03 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/EURUSD_D1_2018_2025.csv"
+    }
+  },
+  "GBPUSD": {
+    "M5": {
+      "status": "SUCCESS",
+      "source": "Synthetic",
+      "samples": 762049,
+      "date_range": "2018-01-01 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/GBPUSD_M5_2018_2025.csv"
+    },
+    "M15": {
+      "status": "SUCCESS",
+      "source": "Synthetic",
+      "samples": 254017,
+      "date_range": "2018-01-01 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/GBPUSD_M15_2018_2025.csv"
+    },
+    "M30": {
+      "status": "SUCCESS",
+      "source": "Synthetic",
+      "samples": 127009,
+      "date_range": "2018-01-01 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/GBPUSD_M30_2018_2025.csv"
+    },
+    "H1": {
+      "status": "SUCCESS",
+      "source": "MT5",
+      "samples": 24093,
+      "date_range": "2018-07-03 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/GBPUSD_H1_2018_2025.csv"
+    },
+    "H4": {
+      "status": "SUCCESS",
+      "source": "MT5",
+      "samples": 6987,
+      "date_range": "2018-07-03 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/GBPUSD_H4_2018_2025.csv"
+    },
+    "D1": {
+      "status": "SUCCESS",
+      "source": "MT5",
+      "samples": 2104,
+      "date_range": "2018-07-03 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/GBPUSD_D1_2018_2025.csv"
+    }
+  },
+  "USDJPY": {
+    "M5": {
+      "status": "SUCCESS",
+      "source": "Synthetic",
+      "samples": 762049,
+      "date_range": "2018-01-01 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/USDJPY_M5_2018_2025.csv"
+    },
+    "M15": {
+      "status": "SUCCESS",
+      "source": "Synthetic",
+      "samples": 254017,
+      "date_range": "2018-01-01 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/USDJPY_M15_2018_2025.csv"
+    },
+    "M30": {
+      "status": "SUCCESS",
+      "source": "Synthetic",
+      "samples": 127009,
+      "date_range": "2018-01-01 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/USDJPY_M30_2018_2025.csv"
+    },
+    "H1": {
+      "status": "SUCCESS",
+      "source": "MT5",
+      "samples": 24023,
+      "date_range": "2018-07-03 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/USDJPY_H1_2018_2025.csv"
+    },
+    "H4": {
+      "status": "SUCCESS",
+      "source": "MT5",
+      "samples": 6918,
+      "date_range": "2018-07-03 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/USDJPY_H4_2018_2025.csv"
+    },
+    "D1": {
+      "status": "SUCCESS",
+      "source": "MT5",
+      "samples": 2104,
+      "date_range": "2018-07-03 00:00:00 to 2025-03-31 00:00:00",
+      "file": "data/forex/USDJPY_D1_2018_2025.csv"
+    }
+  }
+}
