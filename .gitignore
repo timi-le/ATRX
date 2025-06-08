@@ -112,6 +112,9 @@ data/*.csv
 historical_data/
 market_data/
 
+# Exception: Allow forex training data
+!data/forex/*.csv
+
 # Model files (can be large)
 *.pkl
 *.joblib
