@@ -1,155 +1,189 @@
-# ATRX - Alpha Technology Risk Execution
+# atrx-public
 
-A production AI-powered quantitative trading platform for FX markets combining regime detection, multi-model ML prediction, LLM-based decision validation, and automated trade execution with multi-layer risk management.
+Public reference for ATRX, a production AI trading system live since November 2025 with 600+ executed trades across XAUUSD, GBPUSD, and USDJPY.
 
-Live since November 2025. 600+ executed trades across XAUUSD, GBPUSD, and USDJPY.
+_Status: reference · Last updated: 2026-05-13_
 
 ---
 
-## Architecture
-
-```
-Market Data Feeds (WebSocket / MT5 API)
-         |
-         v
-+------------------+     +-------------------+     +------------------+
-|  Data Ingestion  |---->|  Feature Engine    |---->| Regime Detector  |
-|  (Live/Hist)     |     |  (JIT-optimized,  |     | (HMM, GMM,      |
-+------------------+     |   70+ indicators)  |     |  KMeans, Rules)  |
-                         +-------------------+     +------------------+
-                                                          |
-                              +---------------------------+
-                              v
-                    +-------------------+     +-------------------+
-                    | ML Predictor      |<--->| Strategy Switcher |
-                    | (XGBoost, LSTM,   |     | (Regime-adaptive) |
-                    |  CNN, Ensemble)   |     +-------------------+
-                    +-------------------+              |
-                              |                        v
-                    +-------------------+     +-------------------+
-                    | LLM Validation    |     | Position Sizer    |
-                    | (Gemini API,      |     | (Kelly Criterion, |
-                    |  Scenario Gen)    |     |  ATR-based S/L)   |
-                    +-------------------+     +-------------------+
-                              |                        |
-                              v                        v
-                    +-------------------+     +-------------------+
-                    | Risk Manager      |---->| Execution Engine  |
-                    | (3-layer drawdown,|     | (MT5 API,         |
-                    |  circuit breakers)|     |  order routing)   |
-                    +-------------------+     +-------------------+
-                                                       |
-                                                       v
-                                              +-------------------+
-                                              | Monitoring & Logs |
-                                              | (PostgreSQL,      |
-                                              |  performance DB)  |
-                                              +-------------------+
-```
-
-## Core Components
-
-### Research Engine (`/core`, `/trainers`, `/backtester`)
-25,000+ lines of Python implementing the full quantitative research pipeline:
-
-- **Feature Engine** - 70+ technical indicators with Numba JIT optimization. Computes momentum, volatility, trend, Bollinger, Hurst exponent, Shannon entropy, kurtosis, spread, RSI, MACD, Stochastic, ADX, CCI, and more across configurable lookback windows.
-- **Regime Detector** - Market regime classification (trending, mean-reverting, choppy) using Hidden Markov Models, Gaussian Mixture Models, KMeans clustering, DBSCAN, and rule-based fallback logic.
-- **ML Predictor** - Multi-model prediction pipeline with XGBoost, LSTM, and CNN models. Includes cross-validation utilities, walk-forward validation, hyperparameter tuning, and ONNX export for optimized inference.
-- **Macro Engine** - Economic surprise indices combined with news sentiment analysis to produce unified macro feature vectors for ML models and regime detection.
-- **Backtester** - Full backtesting framework with historical market replay, execution simulation (slippage, spread, latency modeling), stress testing, and comprehensive performance metrics (Sharpe, Sortino, Calmar, max drawdown, win rate, profit factor).
-- **Trainer Suite** - Dedicated training scripts for each model type with configurable training parameters, early stopping, model versioning, and automated retraining scheduling.
-
-### Execution Layer (`/services`, `/strategies`)
-- **Execution Engine** - TWAP and POV order slicing algorithms for large orders. Multi-broker routing with MT5 integration.
-- **Risk Manager** - Three-layer drawdown control (position, daily, account). ATR-based dynamic stop-loss and take-profit. Circuit breakers for extreme market conditions. VaR calculations.
-- **Position Sizer** - Kelly Criterion optimal sizing with risk-adjusted volatility targeting, maximum allocation caps, and correlation limits.
-- **Strategy Library** - Breakout/trend following, time-based scalping, and grid/martingale strategies with regime-adaptive switching.
-
-### LLM Decision Layer
-- Multi-tier validation using Google Gemini API
-- Structured prompt engineering for pre-session scenario generation
-- Dual execution path generation based on macro-conditional analysis
-- Structured output parsing with error handling and fallback logic
-
-### API & Infrastructure (`/api`, `/config`)
-- FastAPI REST API for system control, health monitoring, and data retrieval
-- PostgreSQL-backed persistent state management
-- WebSocket connections for live price feed ingestion
-- YAML-based hierarchical configuration with environment overrides
-- Encrypted secrets management with TLS support
-- Audit logging for compliance and debugging
-
-## Tech Stack
-
-| Layer | Technologies |
-|-------|-------------|
-| Core | Python 3.11+, NumPy, Pandas, SciPy |
-| ML | Scikit-learn, XGBoost, TensorFlow/Keras, ONNX Runtime |
-| Optimization | Numba JIT |
-| API | FastAPI, Uvicorn, Pydantic |
-| Database | PostgreSQL |
-| Messaging | ZeroMQ |
-| Broker | MetaTrader 5 API |
-| AI | Google Gemini API |
-| Infrastructure | Docker, Git, Linux |
-
-## Performance
-
-| Metric | Result |
-|--------|--------|
-| Live Trades | 600+ since Nov 2025 |
-| Instruments | XAUUSD, GBPUSD, USDJPY |
-| Regime Detection | HMM + GMM + KMeans ensemble |
-| Feature Count | 70+ JIT-optimized indicators |
-| Codebase | 25,000+ lines of Python |
-
-## Project Structure
-
-```
-ATRX/
-|-- api/                  # FastAPI REST endpoints
-|-- backtester/           # Backtesting engine, market replay, stress testing
-|-- config/               # YAML configs, secrets management, TLS
-|-- core/                 # Feature engine, regime detector, risk manager,
-|                         # execution engine, macro engine, ML predictor,
-|                         # position sizer, order router, strategy switcher
-|-- data/                 # Data connectors (MT5, OANDA, Dukascopy),
-|                         # news sentiment, economic calendar
-|-- docs/                 # System documentation, audit reports, devlog
-|-- evaluation/           # Model evaluation and validation
-|-- scripts/              # Training pipelines, data processing, utilities
-|-- services/             # Execution service layer
-|-- strategies/           # Trading strategy implementations
-|-- tools/                # Parameter tuning framework
-|-- trainers/             # ML model training (XGBoost, LSTM, CNN),
-|                         # cross-validation, retraining scheduler
-|-- test_models/          # Trained model artifacts
-|-- test_reports/         # Backtest and integration test results
-|-- outputs/              # Stress testing and backtest outputs
-```
-
-## Setup
+## Quick start
 
 ```bash
-git clone https://github.com/timi-le/ATRX.git
-cd ATRX
-python -m venv venv
-source venv/bin/activate
+git clone https://github.com/timi-le/atrx-public.git
+cd atrx-public
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+python main.py --help
 ```
 
-Configure environment variables in `config/.env` (see `config/env_template.txt`).
+This repository is reference code. Running it against live capital requires the trained model artifacts and broker credentials, which are not published.
 
-## Current Development
+## Why this exists
 
-**v3.1** - Live production system with multi-factor alpha, HMM regime detection, LLM validation, and risk management.
+ATRX is a production multi-asset algorithmic trading system. It runs a regime-aware multi-model ML pipeline that ingests live market data, generates probabilistic signals, validates them through a three-tier LLM decision layer, sizes positions under Kelly with volatility targeting, and executes through MetaTrader 5 with three-layer drawdown control.
 
-**v4.0** (in progress) - Standardized model interface, per-symbol adaptive alpha engine, LangGraph agentic decision pipeline, macro intelligence integration with 109-path causal transmission matrix, Monte Carlo live calibration, overfitting monitor, and continuous model fine-tuning loop.
+The live system has been in production since November 2025. This repository is the sanitized public reference. It documents the architecture, the component design, and the engineering approach for technical readers and prospective collaborators. Trained models, broker credentials, and operational tooling stay private.
 
-## Author
+The integration is the novelty. Regime detection, multi-model ML, and LLM-based decision validation are individually well-explored. Combining them inside a single live execution loop with proper risk discipline and walk-forward calibration is rare. ATRX does this end-to-end.
 
-**Timilehin Olapade** - ML Engineer & Quantitative Developer
-MScFE Candidate, WorldQuant University
+## How it works
+
+```
+              Market data (MT5, OANDA, Dukascopy, WebSocket)
+                                 |
+                                 v
+                       +---------------------+
+                       |  Feature engine     |
+                       |  70+ JIT indicators |
+                       +---------+-----------+
+                                 |
+              +------------------+------------------+
+              v                                     v
+      +---------------+                  +-------------------+
+      | Regime        |                  | Macro engine      |
+      | HMM, GMM,     |                  | Surprise indices, |
+      | KMeans, rules |                  | news sentiment    |
+      +-------+-------+                  +---------+---------+
+              |                                    |
+              +------------------+-----------------+
+                                 |
+                                 v
+                       +--------------------+
+                       | ML predictor       |
+                       | XGBoost, LSTM, CNN |
+                       | ONNX inference     |
+                       +---------+----------+
+                                 |
+                                 v
+                       +--------------------+
+                       | LLM validation     |
+                       | Gemini, three-tier |
+                       +---------+----------+
+                                 |
+                                 v
+                       +----------------------+
+                       | Position sizer       |
+                       | Kelly, ATR S/L, vol  |
+                       | targeting            |
+                       +----------+-----------+
+                                  |
+                                  v
+                       +----------------------+
+                       | Risk manager         |
+                       | three-layer drawdown,|
+                       | circuit breakers, VaR|
+                       +----------+-----------+
+                                  |
+                                  v
+                       +----------------------+
+                       | Execution engine     |
+                       | TWAP, POV, MT5       |
+                       +----------+-----------+
+                                  |
+                                  v
+                       +----------------------+
+                       | Monitoring           |
+                       | PostgreSQL, audit    |
+                       +----------------------+
+```
+
+Each component is independently testable. The feature engine and regime detector run as JIT-compiled hot paths. The ML predictor and LLM validation are decoupled stages that can be swapped or disabled. Only the risk manager and execution engine touch broker state.
+
+## Components
+
+### Feature engine
+
+70+ technical indicators with Numba JIT optimization. Momentum, volatility, trend, Bollinger bands, Hurst exponent, Shannon entropy, kurtosis, spread, RSI, MACD, Stochastic, ADX, CCI, and others across configurable lookback windows.
+
+### Regime detector
+
+Market regime classification across trending, mean-reverting, and choppy states. Ensemble of Hidden Markov Models, Gaussian Mixture Models, KMeans, DBSCAN, and rule-based fallback.
+
+### ML predictor
+
+XGBoost, LSTM, and CNN models trained per instrument and per regime. Walk-forward validation, hyperparameter tuning, and ONNX export for runtime inference.
+
+### Macro engine
+
+Economic surprise indices combined with news sentiment, fused into macro feature vectors that feed both the ML predictor and the regime detector.
+
+### LLM decision validation
+
+Three-tier validation pipeline against the Google Gemini API. Structured prompt engineering for pre-session scenario generation. Dual execution paths conditional on macro analysis. Structured-output parsing with deterministic fallback when the model returns malformed output.
+
+### Position sizer
+
+Kelly criterion sizing with volatility targeting, maximum allocation caps, and correlation limits. ATR-based dynamic stop-loss and take-profit.
+
+### Risk manager
+
+Three-layer drawdown control across position, daily, and account scopes. Circuit breakers for extreme conditions. Rolling-window VaR.
+
+### Execution engine
+
+TWAP and POV order-slicing for larger orders. Multi-broker routing with MT5 as primary. Latency-aware placement.
+
+### Backtester
+
+Full historical market replay with execution simulation (slippage, spread, latency). Stress testing and standard performance metrics (Sharpe, Sortino, Calmar, max drawdown, win rate, profit factor).
+
+## Tech stack
+
+Python 3.11+, NumPy, Pandas, SciPy, Scikit-learn, XGBoost, TensorFlow/Keras, ONNX Runtime, Numba JIT, FastAPI, Uvicorn, Pydantic, PostgreSQL, ZeroMQ, MetaTrader 5 API, Google Gemini API, Docker.
+
+## Production behavior
+
+| Metric | Value |
+|---|---|
+| Live since | November 2025 |
+| Executed trades | 600+ |
+| Instruments | XAUUSD, GBPUSD, USDJPY |
+| Codebase | 25,000+ lines of Python |
+| Regime detection | HMM, GMM, and KMeans ensemble |
+| Feature count | 70+ JIT-optimized indicators |
+
+Detailed P&L, Sharpe, and per-instrument performance figures are tracked privately and not published with this reference. The live system runs against private capital.
+
+## What this is NOT
+
+- Not a deployable trading bot. The runnable production system, trained model artifacts, and broker credentials are private.
+- Not financial advice. The code is published for technical reference, not for investment use.
+- Not a multi-broker abstraction. MT5 is the primary integration; other brokers are scaffolded but not production-tested in this repo.
+- Not benchmarked against external trading systems. Internal benchmarks are tracked privately.
+
+## Repository layout
+
+```
+api/            FastAPI REST endpoints
+backtester/     Backtesting engine, market replay, stress testing
+config/         YAML configs, secrets, TLS
+core/           Feature engine, regime detector, risk manager,
+                execution engine, macro engine, ML predictor,
+                position sizer, order router, strategy switcher
+data/           Data connectors (MT5, OANDA, Dukascopy),
+                news sentiment, economic calendar
+docs/           System documentation
+examples/       Reference usage and demos
+execution/      Execution and order routing
+models/         Model loader and inference interfaces
+monitoring/     Logging, metrics, health checks
+notebooks/      Research notebooks
+scripts/        Training pipelines, data utilities
+services/       Long-running service layer
+strategies/     Strategy implementations
+tests/          Unit and integration tests
+tools/          Parameter tuning framework
+trainers/       Model training (XGBoost, LSTM, CNN), cross-validation
+web_app/        Web interface (reference)
+main.py         Entry point
+```
+
+## Development
+
+```bash
+pytest tests/
+pre-commit run --all-files
+```
 
 ## License
 
